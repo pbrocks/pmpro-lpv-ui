@@ -169,8 +169,7 @@ function pbrx_header_message() {
 		echo $header;
 	// }
 }
-add_action( 'wp_head', 'pbrx_header_message' );
-
+// add_action( 'wp_head', 'pbrx_header_message' );
 /**
  * Limit post views or load JS to do the same.
  * Hooks into wp action: add_action( 'wp', 'pmpro_lpv_wp1' );
@@ -347,17 +346,6 @@ function set_pmpro_lpv_redirect() {
 
 
 function test_ajax_data() {
-	wp_register_script( 'lpv-diagnostics', plugins_url( '/js/lpv-diagnostics.js', __FILE__ ), array( 'jquery' ), false, false );
-	wp_localize_script(
-		'lpv-diagnostics', 'lpv_diagnostics_object', array(
-			'lpv_diagnostics_ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'lpv_diagnostics_nonce' => wp_create_nonce( 'lpv-diagnostics-nonce' ),
-			'lpv_diagnostics_user_level' => pmpro_get_user_level(),
-			'lpv_diagnostics_redirect' => get_pmpro_lpv_redirect(),
-			'lpv_diagnostics_php_expire' => date( 'Y-m-d H:i:s', strtotime( 'today + 1 week' ) ),
-		)
-	);
-	wp_enqueue_script( 'lpv-diagnostics' );
 	// wp_register_script( 'set-get-cookies', plugins_url( '/js/set-get-cookies.js', __FILE__ ), array( 'jquery' ), false, false );
 	// wp_enqueue_script( 'set-get-cookies' );
 	// wp_register_script( 'set-cookie-2009', plugins_url( '/js/set-cookie-2009.js', __FILE__ ), array( 'jquery' ), false, false );
