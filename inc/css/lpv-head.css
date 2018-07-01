@@ -17,7 +17,11 @@
 	bottom: 0;
 	font-size: 2rem;
 	left: 0;
-	padding: 1rem;
+	padding: 1rem 0;
 	position: fixed;
 	width:100%;
 }
+#lpv-footer.grow {
+	padding: 11rem 0;
+}
+
