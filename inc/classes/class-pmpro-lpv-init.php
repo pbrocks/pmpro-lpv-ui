@@ -11,6 +11,19 @@ class PMPro_LPV_Init {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * [init description]
 	 *
@@ -118,41 +131,35 @@ class PMPro_LPV_Init {
 		if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
 			global $current_user;
 
-			// Check cookie for views value.
-			$parts = explode( ';', sanitize_text_field( $_COOKIE['pmpro_lpv_count'] ) );
-			$limitparts = explode( ',', $parts[0] );
+			$limit = intval( PMPRO_LPV_LIMIT );
+			// $remaining_views = $limit - ( $limitparts[1] + 1 );
+			$remaining_views = 11;
+			if ( 1 === PMPRO_LPV_USE_JAVASCRIPT ) {
+				$yep_js = 'true';
+			}
 
-			// Get the level limit for the current user.
-			if ( defined( 'PMPRO_LPV_LIMIT' ) && PMPRO_LPV_LIMIT > 0 ) {
-				$limit = intval( PMPRO_LPV_LIMIT );
-				// $remaining_views = $limit - ( $limitparts[1] + 1 );
-				$remaining_views = 11;
-				if ( 1 === PMPRO_LPV_USE_JAVASCRIPT ) {
-					$yep_js = 'true';
-				}
-
-				// $use_js = get_option( 'pmprolpv_use_js' );
-				// define( 'PMPRO_LPV_USE_JAVASCRIPT', $use_js );
-				/**
+			// $use_js = get_option( 'pmprolpv_use_js' );
+			// define( 'PMPRO_LPV_USE_JAVASCRIPT', $use_js );
+			/**
 			 * If php-intl isn't enabled on the server,
 			 * the NumberFormatter class won't be present,
 			 * so we create a backup plan.
 			 */
-				if ( class_exists( 'NumberFormatter' ) ) {
-					$formatter = new NumberFormatter( 'en', NumberFormatter::SPELLOUT );
-					$formatted = $formatter->format( $remaining_views );
-				} else {
-					$formatted = number_format( $remaining_views );
-				}
+			if ( class_exists( 'NumberFormatter' ) ) {
+				$formatter = new NumberFormatter( 'en', NumberFormatter::SPELLOUT );
+				$formatted = $formatter->format( $remaining_views );
+			} else {
+				$formatted = number_format( $remaining_views );
+			}
 
-				$article_s = sprintf( _n( '%s free article', '%s free articles', $formatted, 'paid-memberships-pro' ), number_format_i18n( $formatted ) );
+				// $article_s = sprintf( _n( '%s free article', '%s free articles', $formatted, 'paid-memberships-pro' ), number_format_i18n( $formatted ) );
 				?>
 				<div id="lpv-footer" style="z-index:333;">
-			You have <span style="color: #B00000;"><span id="lpv_count"><?php echo PMPRO_LPV_LIMIT; ?></span><?php echo esc_html( $article_s ); ?></span> remaining. 
+			You have <span style="color: #B00000;">formatted <?php echo esc_html( $formatted ); ?> of <span id="lpv_count"><?php echo PMPRO_LPV_LIMIT; ?></span> </span> remaining. 
 			<a href="<?php echo wp_login_url( get_permalink() ); ?>" title="Log in">Log in</a> or <a href="<?php echo pmpro_url( 'levels' ); ?>" title="Subscribe now">Subscribe</a> for unlimited access.
 			</div>
 			<?php
-			}
+			// }
 		}
 	}
 }
