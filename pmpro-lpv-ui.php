@@ -8,7 +8,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'includes/admin.php' );
 
 include( 'pmpro-lpv-notification-bar.php' );
 
-// add_action( 'init', 'pmpro_lpv_ui_init' );
+add_action( 'init', 'pmpro_lpv_ui_init' );
 /**
  * Sets constants and whether or not to use JavaScript.
  *
@@ -40,25 +40,6 @@ function pmpro_lpv_ui_init() {
 	return $level_id;
 }
 
-add_action( 'init', 'get_pmpro_lpv_settings' );
-/**
- * [get_pmpro_lpv_settings Return the settings
- *
- * @return [type] If not a member, level = 0
- */
-function get_pmpro_lpv_settings() {
-	$settings = get_transient( 'lpv_settings' );
-	if ( ! empty( $settings ) ) {
-		$settings['level_id'] = pmpro_get_user_level();
-		$settings['use_js'] = get_option( 'pmprolpv_use_js' );
-		$settings['limit'] = get_option( 'pmprolpv_limit_' . $level_id );
-		$settings['views'] = $limit['views'];
-		$settings['period'] = $limit['period'];
-		set_transient( 'lpv_settings', $settings );
-	}
-	return $settings;
-}
-
 add_action( 'init', 'pmpro_get_user_level' );
 /**
  * [pmpro_get_user_level Return the member's level
@@ -69,7 +50,8 @@ function pmpro_get_user_level() {
 	global $current_user;
 	if ( ! empty( $current_user->membership_level ) ) {
 		$level_id = $current_user->membership_level->id;
-	} else {
+	}
+	if ( empty( $level_id ) ) {
 		$level_id = 0;
 	}
 	return $level_id;
@@ -88,20 +70,23 @@ add_action( 'wp_ajax_nopriv_tie_into_lpv_diagnostics', 'pbrx_header_set_cookie' 
 function pbrx_header_set_cookie() {
 	$ajax_data = $_POST;
 	$month = date( 'n', current_time( 'timestamp' ) );
-	$settings = get_pmpro_lpv_settings();
 	if ( ! empty( $_COOKIE['pmpro_lpv_count'] ) ) {
 		global $current_user;
-		$parts = explode( '|', $_COOKIE['pmpro_lpv_count'] );
+		$parts = explode( ';', $_COOKIE['pmpro_lpv_count'] );
+		$limitparts = explode( ',', $parts[0] );
 		// Get the level limit for the current user.
+		if ( defined( 'PMPRO_LPV_LIMIT' ) && PMPRO_LPV_LIMIT > 0 ) {
+			$limit = intval( PMPRO_LPV_LIMIT );
+		}
 		$ajax_data['parts'] = $parts;
 		$ajax_data['limitparts'] = $limitparts;
-		$ajax_data['level'] = $settings['level_id'];
-		$ajax_data['views'] = $settings['views'];
-		$ajax_data['limit'] = $settings['limit'];
+		$ajax_data['level'] = $limitparts[0];
+		$ajax_data['view'] = $limitparts[1];
+		$ajax_data['limit'] = $limit;
 	}
 
 	$curlev = pmpro_get_user_level();
-	$curviews = $settings['views'];
+	$curviews = $limitparts[1];
 	$expires = date( 'Y-m-d', strtotime( '+30 days' ) );
 	$cookiestr .= "$curlev,$curviews";
 	echo json_encode( $ajax_data );
@@ -114,9 +99,8 @@ function pbrx_header_set_cookie() {
  * @return [type] [description]
  */
 function pbrx_header_message() {
-	$settings = get_pmpro_lpv_settings();
 	$stg = '';
-	if ( true == $settings['use_js'] ) {
+	if ( true == PMPRO_LPV_USE_JAVASCRIPT ) {
 		$yep_js = 'true';
 	} else {
 		$yep_js = 'nope';
@@ -127,7 +111,7 @@ function pbrx_header_message() {
 	<?php
 	$cur_lev = pmpro_get_user_level();
 	$xyz = basename( __FILE__ );
-	$xyz = ' Limit ' . $settings['views'] . ' per ' . $settings['period'] . ' | js ' . $yep_js . ' | Current Level ' . $cur_lev . ' |';
+	$xyz = ' Limit ' . PMPRO_LPV_LIMIT . ' per ' . PMPRO_LPV_LIMIT_PERIOD . ' | js ' . $yep_js . ' | Current Level ' . $cur_lev . ' |';
 	if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
 		$button_value = 'Reset Cookie';
 		// $button_value = 3600 * 24 * 100 . ' seconds';
@@ -141,7 +125,7 @@ function pbrx_header_message() {
 		?>
 	</form>
 	<?php
-	// $values = pmpro_lpv_cookie_values();
+	$values = pmpro_lpv_cookie_values();
 	// print_r( $values );
 	$header = '<h3 style="z-index:1;position:relative;text-align:center;color:tomato;">Count <span id="lpv_counter"></span>' . $xyz . ' <br> ' . $stg . '</h3><div id="data-returned">data-returned here</div><div id="demo">demo</div>';
 	// if ( current_user_can( 'manage_options' ) ) {
@@ -234,61 +218,6 @@ function pmpro_lpv_wp1() {
 	}
 }
 
-function pmpro_lpv_setup() {
-	global $current_user;
-	$settings = get_pmpro_lpv_settings();
-
-	if ( function_exists( 'pmpro_has_membership_access' ) ) {
-		/**
-		 * If we're viewing a page that the user doesn't have access to...
-		 * Could add extra checks here.
-		 */
-		if ( ! pmpro_has_membership_access() ) {
-			/**
-			 * Filter which post types should be tracked by LPV
-			 *
-			 * @since .4
-			 */
-			$pmprolpv_post_types = apply_filters( 'pmprolpv_post_types', array( 'post' ) );
-			$queried_object = get_queried_object();
-			if ( empty( $queried_object ) || empty( $queried_object->post_type ) || ! in_array( $queried_object->post_type, $pmprolpv_post_types, true ) ) {
-				return;
-			}
-
-			$hasaccess = apply_filters( 'pmprolpv_has_membership_access', true, $queried_object );
-			if ( false === $hasaccess ) {
-				set_pmpro_lpv_redirect();
-			}
-
-			// if count is above limit, redirect, otherwise update cookie.
-			// if ( defined( 'PMPRO_LPV_LIMIT' ) && $count > PMPRO_LPV_LIMIT ) {
-			// set_pmpro_lpv_redirect();
-			// } else {
-				// give them access and track the view.
-				add_filter( 'pmpro_has_membership_access_filter', '__return_true' );
-
-			if ( ! empty( $settings['period'] ) ) {
-				switch ( $settings['period'] ) {
-					case 'hour':
-						$expires = current_time( 'timestamp' ) + HOUR_IN_SECONDS;
-						break;
-					case 'day':
-						$expires = current_time( 'timestamp' ) + DAY_IN_SECONDS;
-						break;
-					case 'week':
-						$expires = current_time( 'timestamp' ) + WEEK_IN_SECONDS;
-						break;
-					case 'month':
-						$expires = current_time( 'timestamp' ) + ( DAY_IN_SECONDS * 30 );
-				}
-			} else {
-				$expires = current_time( 'timestamp' ) + ( DAY_IN_SECONDS * 30 );
-				// }
-			}
-		}
-	}
-}
-
 function pmpro_lpv_cookie_values() {
 	$thismonth = date( 'n', current_time( 'timestamp' ) );
 	$level_id = pmpro_get_user_level();
@@ -335,17 +264,19 @@ function pmpro_lpv_cookie_values() {
 
 // add_action( 'init', 'set_pmpro_lpv_cookie' );
 function set_pmpro_lpv_cookie( $cookiestr = '1,3' ) {
-	// if ( ! is_admin() && isset( $_COOKIE['pmpro_lpv_count'] ) ) {
-	// }
-	// $expires = time() + 3600 * 24 * 100;
-	// $month = date( 'n', current_time( 'timestamp' ) );
-	// $curlev = pmpro_get_user_level();
-	// $views = pmpro_lpv_cookie_values();
-	// $curviews = $views['count'];
-	// $cookiestr .= "$curlev,$curviews";
-	// if ( ! is_admin() && ! isset( $_COOKIE['pmpro_lpv_count'] ) ) {
-	// setcookie( 'pmpro_lpv_count', $cookiestr . ';' . $month, $expires, COOKIEPATH, COOKIE_DOMAIN, false );
-	// }
+	if ( ! is_admin() && isset( $_COOKIE['pmpro_lpv_count'] ) ) {
+	}
+
+	$expires = time() + 3600 * 24 * 100;
+	$month = date( 'n', current_time( 'timestamp' ) );
+	$curlev = pmpro_get_user_level();
+	$views = pmpro_lpv_cookie_values();
+	$curviews = $views['count'];
+	$cookiestr .= "$curlev,$curviews";
+
+	if ( ! is_admin() && ! isset( $_COOKIE['pmpro_lpv_count'] ) ) {
+		setcookie( 'pmpro_lpv_count', $cookiestr . ';' . $month, $expires, COOKIEPATH, COOKIE_DOMAIN, false );
+	}
 }
 
 /**
