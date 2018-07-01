@@ -8,7 +8,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'includes/admin.php' );
 
 include( 'pmpro-lpv-notification-bar.php' );
 
-add_action( 'init', 'pmpro_lpv_ui_init' );
+// add_action( 'init', 'pmpro_lpv_ui_init' );
 /**
  * Sets constants and whether or not to use JavaScript.
  *
@@ -38,6 +38,25 @@ function pmpro_lpv_ui_init() {
 		define( 'PMPRO_LPV_USE_JAVASCRIPT', $use_js );
 	}
 	return $level_id;
+}
+
+add_action( 'init', 'get_pmpro_lpv_settings' );
+/**
+ * [get_pmpro_lpv_settings Return the settings
+ *
+ * @return [type] If not a member, level = 0
+ */
+function get_pmpro_lpv_settings() {
+	$settings = get_transient( 'lpv_settings' );
+	if ( ! empty( $settings ) ) {
+		$level_id = pmpro_get_user_level();
+		$settings['use_js'] = get_option( 'pmprolpv_use_js' );
+		$limit = get_option( 'pmprolpv_limit_' . $level_id );
+		$settings['views'] = $limit['views'];
+		$settings['period'] = $limit['period'];
+		set_transient( 'lpv_settings', $settings );
+	}
+	return $settings;
 }
 
 add_action( 'init', 'pmpro_get_user_level' );
@@ -70,14 +89,11 @@ add_action( 'wp_ajax_nopriv_tie_into_lpv_diagnostics', 'pbrx_header_set_cookie' 
 function pbrx_header_set_cookie() {
 	$ajax_data = $_POST;
 	$month = date( 'n', current_time( 'timestamp' ) );
+	$settings = get_pmpro_lpv_settings();
 	if ( ! empty( $_COOKIE['pmpro_lpv_count'] ) ) {
 		global $current_user;
-		$parts = explode( ';', $_COOKIE['pmpro_lpv_count'] );
-		$limitparts = explode( ',', $parts[0] );
+		$parts = explode( '|', $_COOKIE['pmpro_lpv_count'] );
 		// Get the level limit for the current user.
-		if ( defined( 'PMPRO_LPV_LIMIT' ) && PMPRO_LPV_LIMIT > 0 ) {
-			$limit = intval( PMPRO_LPV_LIMIT );
-		}
 		$ajax_data['parts'] = $parts;
 		$ajax_data['limitparts'] = $limitparts;
 		$ajax_data['level'] = $limitparts[0];
@@ -99,36 +115,36 @@ function pbrx_header_set_cookie() {
  * @return [type] [description]
  */
 function pbrx_header_message() {
+	$settings = get_pmpro_lpv_settings();
 	$stg = '';
+	if ( true == $settings['use_js'] ) {
+		$yep_js = 'true';
+	} else {
+		$yep_js = 'nope';
+	}
 	?>
 	<form id="lpv-diagnostics-form">
 		<input type="hidden" name="hidden" value="lpv-diagnostics-test">
 	<?php
 	$cur_lev = pmpro_get_user_level();
 	$xyz = basename( __FILE__ );
-	$xyz = 'Limit ' . PMPRO_LPV_LIMIT . ' | per ' . PMPRO_LPV_LIMIT_PERIOD . ' | js ' . PMPRO_LPV_USE_JAVASCRIPT;
+	$xyz = ' Limit ' . $settings['views'] . ' per ' . $settings['period'] . ' | js ' . $yep_js . ' | Current Level ' . $cur_lev . ' |';
 	if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
 		$button_value = 'Reset Cookie';
 		// $button_value = 3600 * 24 * 100 . ' seconds';
 		$button = '<input type="hidden" name="token" value="reset">';
-		$stg = 'Current Level ' . $cur_lev . ' $_COOKIE(\'pmpro_lpv_count\') SET !! ' . $button;
+		$stg = ' $_COOKIE(\'pmpro_lpv_count\') SET !! ' . $button;
 	} else {
 		$button_value = 'Set Cookie';
 		$button = '<input type="hidden" name="token" value="set">';
-		$stg = 'Current Level ' . $cur_lev . ' $_COOKIE(\'pmpro_lpv_count\') NOT set ?!?!? ' . $button;
+		$stg = ' $_COOKIE(\'pmpro_lpv_count\') NOT set ?!?!? ' . $button;
 	}
 		?>
 	</form>
-	<script type="text/javascript">
-		// insertCounter();
-	</script>
-	<script type="text/javascript">
-		readCookie('pmpro_lpv_count');
-	</script>
 	<?php
-	$values = pmpro_lpv_cookie_values();
+	// $values = pmpro_lpv_cookie_values();
 	// print_r( $values );
-	$header = '<h3 style="z-index:1;position:relative;text-align:center;color:tomato;">' . $stg . '<br>' . $xyz . ' Count <span id="lpv_counter">' . $values['count'] . '</span></h3><div id="data-returned">data-returned here</div><div id="demo">demo</div>';
+	$header = '<h3 style="z-index:1;position:relative;text-align:center;color:tomato;">Count <span id="lpv_counter"></span>' . $xyz . ' <br> ' . $stg . '</h3><div id="data-returned">data-returned here</div><div id="demo">demo</div>';
 	// if ( current_user_can( 'manage_options' ) ) {
 		echo $header;
 	// }
@@ -263,20 +279,34 @@ function pmpro_lpv_cookie_values() {
 	return $return;
 }
 
-add_action( 'init', 'set_pmpro_lpv_cookie' );
+// add_action( 'init', 'set_pmpro_lpv_cookie' );
 function set_pmpro_lpv_cookie( $cookiestr = '1,3' ) {
-	$expires = time() + 3600 * 24 * 100;
-	$month = date( 'n', current_time( 'timestamp' ) );
-	$curlev = pmpro_get_user_level();
-	$views = pmpro_lpv_cookie_values();
-	$curviews = $views['count'];
-	$cookiestr .= "$curlev,$curviews";
-
-	if ( ! is_admin() && ! isset( $_COOKIE['pmpro_lpv_count'] ) ) {
-		setcookie( 'pmpro_lpv_count', $cookiestr . ';' . $month, $expires, COOKIEPATH, COOKIE_DOMAIN, false );
-	}
+	// if ( ! is_admin() && isset( $_COOKIE['pmpro_lpv_count'] ) ) {
+	// }
+	// $expires = time() + 3600 * 24 * 100;
+	// $month = date( 'n', current_time( 'timestamp' ) );
+	// $curlev = pmpro_get_user_level();
+	// $views = pmpro_lpv_cookie_values();
+	// $curviews = $views['count'];
+	// $cookiestr .= "$curlev,$curviews";
+	// if ( ! is_admin() && ! isset( $_COOKIE['pmpro_lpv_count'] ) ) {
+	// setcookie( 'pmpro_lpv_count', $cookiestr . ';' . $month, $expires, COOKIEPATH, COOKIE_DOMAIN, false );
+	// }
 }
 
+/**
+ * Redirect to  the configured page or the default levels page
+ */
+function get_pmpro_lpv_redirect() {
+	$page_id = get_option( 'pmprolpv_redirect_page' );
+
+	if ( empty( $page_id ) ) {
+		$redirect_url = pmpro_url( 'levels' );
+	} else {
+		$redirect_url = get_the_permalink( $page_id );
+	}
+	return $redirect_url;
+}
 /**
  * Redirect to  the configured page or the default levels page
  */
@@ -301,15 +331,15 @@ function test_ajax_data() {
 			'lpv_diagnostics_ajaxurl' => admin_url( 'admin-ajax.php' ),
 			'lpv_diagnostics_nonce' => wp_create_nonce( 'lpv-diagnostics-nonce' ),
 			'lpv_diagnostics_user_level' => pmpro_get_user_level(),
-			'lpv_diagnostics_cookie_values' => pmpro_lpv_cookie_values(),
+			'lpv_diagnostics_redirect' => get_pmpro_lpv_redirect(),
 			'lpv_diagnostics_php_expire' => date( 'Y-m-d H:i:s', strtotime( 'today + 1 week' ) ),
 		)
 	);
 	wp_enqueue_script( 'lpv-diagnostics' );
-	wp_register_script( 'set-get-cookies', plugins_url( '/js/set-get-cookies.js', __FILE__ ), array( 'jquery' ), false, false );
-	wp_enqueue_script( 'set-get-cookies' );
-	wp_register_script( 'set-cookie-2009', plugins_url( '/js/set-cookie-2009.js', __FILE__ ), array( 'jquery' ), false, false );
-	wp_enqueue_script( 'set-cookie-2009' );
+	// wp_register_script( 'set-get-cookies', plugins_url( '/js/set-get-cookies.js', __FILE__ ), array( 'jquery' ), false, false );
+	// wp_enqueue_script( 'set-get-cookies' );
+	// wp_register_script( 'set-cookie-2009', plugins_url( '/js/set-cookie-2009.js', __FILE__ ), array( 'jquery' ), false, false );
+	// wp_enqueue_script( 'set-cookie-2009' );
 }
 add_action( 'wp_enqueue_scripts', 'test_ajax_data' );
 

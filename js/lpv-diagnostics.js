@@ -60,17 +60,24 @@ var getCookie = function (name) {
 	var parts = value.split("; " + name + "=");
 	if (parts.length == 2) return parts.pop().split(";").shift();
 };
-var thisCookie = getCookie('lpv_count');
-var myarr = thisCookie.split("|");
-var count = Number(myarr[1])+Number(1);
-if ( count > 5 ) {
+var thisCookie = getCookie('pmpro_lpv_count');
+    if (thisCookie == null) {
+		count = 0;
+		limit = 5;
+    }
+    else {
+ 		var myarr = thisCookie.split("|");
+		var count = Number(myarr[1]) + Number(1);
+		var limit = myarr[2];
+    }
+if ( count > Number(limit) ) {
 	count = 0;
-	document.cookie = 'lpv_count=level|' + count + '|limit; expires=Fri, 31 Dec 2024 23:59:59 GMT';
+	// document.cookie = 'pmpro_lpv_count=level|' + count + '|limit; expires=Fri, 17 Dec 2024 23:59:59 GMT';
 	// window.location = 'https://google.com';
-	document.getElementById("demo").innerHTML = 'lpv_count=level|' + count + '|limit; expires=Fri, 31 Dec 2024 23:59:59 GMT';
+	document.getElementById("demo").innerHTML = 'pmpro_lpv_count=level|' + count + '|limit; expires=Fri, 24 Dec 2024 23:59:59 GMT';
 } else {
-	document.cookie = 'lpv_count=level|' + count + '|limit; expires=Fri, 31 Dec 2024 23:59:59 GMT';
-	document.getElementById("demo").innerHTML = 'lpv_count=level|' + count + '|limit; expires=Fri, 31 Dec 2024 23:59:59 GMT';
+	// document.cookie = 'pmpro_lpv_count=level|' + count + '|limit; expires=Fri, 24 Dec 2024 14:59:59 GMT';
+	document.getElementById("demo").innerHTML = 'pmpro_lpv_count=level|' + count + '|limit; expires=Fri, 24 Dec 2024 23:59:59 GMT';
 }
 	// $('#lpv_diagnostics_submit').css({"font-size": "1.3rem","color": "rebeccapurple"}).click(function() {
 		$.ajax({
@@ -88,7 +95,7 @@ if ( count > 5 ) {
 				userlevel    : lpv_diagnostics_object.lpv_diagnostics_user_level,
 				cookie_values: lpv_diagnostics_object.lpv_diagnostics_cookie_values,
 				limit        : lpv_diagnostics_object.lpv_diagnostics_limit,
-				current_view : lpv_diagnostics_object.lpv_diagnostics_current_view,
+				redirect : lpv_diagnostics_object.lpv_diagnostics_redirect,
 				phpexpire    : lpv_diagnostics_object.lpv_diagnostics_php_expire,
 
 				// Admin stuff
@@ -98,13 +105,17 @@ if ( count > 5 ) {
 			},
 			// dataType: "JSON",
 			success:function( data ) {
-				$('#data-returned').html(data);
 				var obj = JSON.parse(data);
 				var d = new Date(obj.phpexpire);
 				var exp = d.toUTCString();
+				var lpv_array = obj.userlevel + '|' + count + '|' + obj.limit;
 				console.log( data );
-				document.cookie="pmp_lpv_count=" + obj.parts + '; expires=' + exp + ';path=/';
-				$('#data-returned').html('Cookie Set ' + "pmp_lpv_count=" + obj.parts + '; expires=' + exp );
+				document.cookie="pmpro_lpv_count=" + lpv_array + '; expires=' + exp + ';path=/';
+				$('#data-returned').html('Cookie Set ' + "pmpro_lpv_count=" + count + '; expires=' + exp );
+				if ( obj.limit == count ) {
+					window.location = obj.redirect;
+				}
+				$('#lpv_counter').html(count);
 			},
 			error: function( jqXHR, textStatus, errorThrown ){
 				console.log( errorThrown );

@@ -15,6 +15,13 @@ function a_notification_bar_for_limit_post_view() {
 		if ( defined( 'PMPRO_LPV_LIMIT' ) && PMPRO_LPV_LIMIT > 0 ) {
 			$limit = intval( PMPRO_LPV_LIMIT );
 			$remaining_views = $limit - ( $limitparts[1] + 1 );
+			$remaining_views = 11;
+			if ( 1 === PMPRO_LPV_USE_JAVASCRIPT ) {
+				$yep_js = 'true';
+			}
+
+		// $use_js = get_option( 'pmprolpv_use_js' );
+		// define( 'PMPRO_LPV_USE_JAVASCRIPT', $use_js );
 			/**
 			 * If php-intl isn't enabled on the server,
 			 * the NumberFormatter class won't be present,
@@ -29,9 +36,9 @@ function a_notification_bar_for_limit_post_view() {
 
 			$article_s = sprintf( _n( '%s free article', '%s free articles', $formatted, 'paid-memberships-pro' ), number_format_i18n( $formatted ) );
 			?>
-			<div style="text-align:center;background: #d4f1df; bottom: 0; font-size: 2rem; left:0; padding:1rem; position: fixed; width:100%;z-index:333;"><span id="lpv_count">lpv_count</span>
+			<div style="text-align:center;background: #d4f1df; bottom: 0; font-size: 2rem; left:0; padding:1rem; position: fixed; width:100%;z-index:333;"><span id="lpv_count"><?php echo PMPRO_LPV_LIMIT;?></span>
 			You have <span style="color: #B00000;"><?php echo esc_html( $article_s ); ?></span> remaining. 
-			<a href="<?php echo wp_login_url( get_permalink() ); ?>" title="Log in">Log in</a> or <a href="<?php echo pmpro_url( 'levels' ); ?>" title="Subscribe now">Subscribe</a> now for unlimited online access99.
+			<a href="<?php echo wp_login_url( get_permalink() ); ?>" title="Log in">Log in</a> or <a href="<?php echo pmpro_url( 'levels' ); ?>" title="Subscribe now">Subscribe</a> for unlimited access.
 		</div>
 		<?php
 		}
