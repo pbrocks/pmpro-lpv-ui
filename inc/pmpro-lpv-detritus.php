@@ -1,5 +1,19 @@
 <?php
 
+add_action( 'admin_head', 'pmpro_lpv_ui_admin_head' );
+/**
+ * Sets constants and whether or not to use JavaScript.
+ *
+ * @since 0.3.0
+ */
+function pmpro_lpv_ui_admin_head() {
+	?>
+	<style type="text/css">
+
+	</style>
+	<?php
+	echo '<div id="lpv-admin-head"><div id="lpv-admin-head-inner">lpv-admin-head</div> outer</div>';
+}
 add_action( 'init', 'pmpro_lpv_ui_init' );
 /**
  * Sets constants and whether or not to use JavaScript.

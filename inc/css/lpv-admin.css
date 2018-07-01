@@ -1,0 +1,10 @@
+#lpv-admin-head {
+	text-align: center;
+	margin-top: 2rem;
+	background: rgba(22,22,22,.2);
+	padding: 1rem;
+	color: blue;
+}
+#lpv-admin-head-inner {
+	color: red;
+}

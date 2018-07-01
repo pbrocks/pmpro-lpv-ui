@@ -7,6 +7,7 @@ class PMPro_LPV_Init {
 	public static function init() {
 		// add_action( 'customize_register', array( __CLASS__, 'engage_the_customizer' ) );
 		// add_action( 'wp_enqueue_scripts', array( __CLASS__, 'customizer_enqueue' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'lpv_admin_enqueue' ) );
 		add_action( 'wp_footer', array( __CLASS__, 'lpv_notification_bar' ) );
 		add_action( 'wp_head', array( __CLASS__, 'pbrx_header_message' ) );
 	}
@@ -54,8 +55,8 @@ class PMPro_LPV_Init {
 		// }
 	}
 
-	public static function customizer_enqueue() {
-		wp_enqueue_style( 'customizer-section', plugins_url( '../css/customizer-section.css', __FILE__ ) );
+	public static function lpv_admin_enqueue() {
+		wp_enqueue_style( 'lpv-admin', plugins_url( '../css/lpv-admin.css', __FILE__ ) );
 	}
 
 	/**
@@ -79,3 +80,5 @@ class PMPro_LPV_Init {
 		<?php
 	}
 }
+
+
