@@ -49,9 +49,9 @@ add_action( 'init', 'get_pmpro_lpv_settings' );
 function get_pmpro_lpv_settings() {
 	$settings = get_transient( 'lpv_settings' );
 	if ( ! empty( $settings ) ) {
-		$level_id = pmpro_get_user_level();
+		$settings['level_id'] = pmpro_get_user_level();
 		$settings['use_js'] = get_option( 'pmprolpv_use_js' );
-		$limit = get_option( 'pmprolpv_limit_' . $level_id );
+		$settings['limit'] = get_option( 'pmprolpv_limit_' . $level_id );
 		$settings['views'] = $limit['views'];
 		$settings['period'] = $limit['period'];
 		set_transient( 'lpv_settings', $settings );
@@ -69,8 +69,7 @@ function pmpro_get_user_level() {
 	global $current_user;
 	if ( ! empty( $current_user->membership_level ) ) {
 		$level_id = $current_user->membership_level->id;
-	}
-	if ( empty( $level_id ) ) {
+	} else {
 		$level_id = 0;
 	}
 	return $level_id;
@@ -96,13 +95,13 @@ function pbrx_header_set_cookie() {
 		// Get the level limit for the current user.
 		$ajax_data['parts'] = $parts;
 		$ajax_data['limitparts'] = $limitparts;
-		$ajax_data['level'] = $limitparts[0];
-		$ajax_data['view'] = $limitparts[1];
-		$ajax_data['limit'] = $limit;
+		$ajax_data['level'] = $settings['level_id'];
+		$ajax_data['views'] = $settings['views'];
+		$ajax_data['limit'] = $settings['limit'];
 	}
 
 	$curlev = pmpro_get_user_level();
-	$curviews = $limitparts[1];
+	$curviews = $settings['views'];
 	$expires = date( 'Y-m-d', strtotime( '+30 days' ) );
 	$cookiestr .= "$curlev,$curviews";
 	echo json_encode( $ajax_data );
@@ -230,6 +229,61 @@ function pmpro_lpv_wp1() {
 				}
 				// setcookie( 'pmpro_lpv_count', $cookiestr . ';' . $month, $expires, '/' );
 				set_pmpro_lpv_cookie( $cookiestr );
+			}
+		}
+	}
+}
+
+function pmpro_lpv_setup() {
+	global $current_user;
+	$settings = get_pmpro_lpv_settings();
+
+	if ( function_exists( 'pmpro_has_membership_access' ) ) {
+		/**
+		 * If we're viewing a page that the user doesn't have access to...
+		 * Could add extra checks here.
+		 */
+		if ( ! pmpro_has_membership_access() ) {
+			/**
+			 * Filter which post types should be tracked by LPV
+			 *
+			 * @since .4
+			 */
+			$pmprolpv_post_types = apply_filters( 'pmprolpv_post_types', array( 'post' ) );
+			$queried_object = get_queried_object();
+			if ( empty( $queried_object ) || empty( $queried_object->post_type ) || ! in_array( $queried_object->post_type, $pmprolpv_post_types, true ) ) {
+				return;
+			}
+
+			$hasaccess = apply_filters( 'pmprolpv_has_membership_access', true, $queried_object );
+			if ( false === $hasaccess ) {
+				set_pmpro_lpv_redirect();
+			}
+
+			// if count is above limit, redirect, otherwise update cookie.
+			// if ( defined( 'PMPRO_LPV_LIMIT' ) && $count > PMPRO_LPV_LIMIT ) {
+			// set_pmpro_lpv_redirect();
+			// } else {
+				// give them access and track the view.
+				add_filter( 'pmpro_has_membership_access_filter', '__return_true' );
+
+			if ( ! empty( $settings['period'] ) ) {
+				switch ( $settings['period'] ) {
+					case 'hour':
+						$expires = current_time( 'timestamp' ) + HOUR_IN_SECONDS;
+						break;
+					case 'day':
+						$expires = current_time( 'timestamp' ) + DAY_IN_SECONDS;
+						break;
+					case 'week':
+						$expires = current_time( 'timestamp' ) + WEEK_IN_SECONDS;
+						break;
+					case 'month':
+						$expires = current_time( 'timestamp' ) + ( DAY_IN_SECONDS * 30 );
+				}
+			} else {
+				$expires = current_time( 'timestamp' ) + ( DAY_IN_SECONDS * 30 );
+				// }
 			}
 		}
 	}
