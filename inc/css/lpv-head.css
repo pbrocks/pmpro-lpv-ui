@@ -1,0 +1,28 @@
+#lpv-head {
+    z-index: 1;
+    position: relative;
+    text-align: center;
+    color: tomato;
+    background: rgba(222,222,222,.64);
+    padding: 1rem;
+}
+#lpv-head-inner {
+	color: red;
+}
+
+#lpv-footer {
+	text-align: center;
+	background: #d4f1df;
+	background: rgba(212, 241, 223,.8);
+	bottom: 0;
+	font-size: 1.5rem;
+	left: 0;
+	padding: 1rem 0;
+	position: fixed;
+	width:100%;
+	transition: all 1.3s 1s;
+}
+#lpv-footer.grow {
+	padding: 11rem 0;
+}
+

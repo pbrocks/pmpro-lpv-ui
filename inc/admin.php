@@ -32,7 +32,9 @@ add_action( 'admin_menu', 'pmprolpv_admin_menu' );
  * @since 0.3.0
  */
 function pmprolpv_settings_page() {
-	require_once( plugin_dir_path( __FILE__ ) . '../adminpages/limitpostviews.php' );
+	echo '<h2>Function ' . __FUNCTION__ . '</h2>';
+	require_once( plugin_dir_path( __FILE__ ) . 'adminpages/limitpostviews.php' );
+	echo 'File ' . __FILE__;
 }
 
 /**

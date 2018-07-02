@@ -23,7 +23,7 @@ require_once( PMPRO_DIR . '/adminpages/admin_header.php' );
  * @since 0.3.0
  */
 function pmprolpv_settings_section_limits() {
-	echo '<p>' . __( 'Limit post views by membership level below. Users without the specified membership level will be able to view that many posts which they normally would not have adccess to.', 'pmpro' ) . '</p>';
+	echo '<p class="description">' . __( 'Limit post views by membership level below. Users without the specified membership level will be able to view that many posts which they normally would not have access to.', 'pmpro' ) . '</p>';
 }
 
 /**
@@ -35,7 +35,7 @@ function pmprolpv_settings_field_limits( $level_id ) {
 	$limit = get_option( 'pmprolpv_limit_' . $level_id );
 	?>
 	<input size="2" type="text" id="level_<?php echo $level_id; ?>_views"
-	       name="pmprolpv_limit_<?php echo $level_id; ?>[views]" value="<?php echo $limit['views']; ?>">
+		   name="pmprolpv_limit_<?php echo $level_id; ?>[views]" value="<?php echo $limit['views']; ?>">
 	<?php _e( ' views per ', 'pmprolpv' ); ?>
 	<select name="pmprolpv_limit_<?php echo $level_id; ?>[period]" id="level_<?php echo $level_id; ?>_period">
 		<option
@@ -66,16 +66,19 @@ function pmprolpv_settings_section_redirection() {
 function pmprolpv_settings_field_redirect_page() {
 
 	global $pmpro_pages;
-	$page_id = get_option('pmprolpv_redirect_page');
+	$page_id = get_option( 'pmprolpv_redirect_page' );
 
 	// Default to Levels page
-	if(empty($page_id))
+	if ( empty( $page_id ) ) {
 		$page_id = $pmpro_pages['levels'];
+	}
 
-	wp_dropdown_pages(array(
-		'selected' => $page_id,
-		'name' => 'pmprolpv_redirect_page'
-	));
+	wp_dropdown_pages(
+		array(
+			'selected' => $page_id,
+			'name' => 'pmprolpv_redirect_page',
+		)
+	);
 }
 
 /**
@@ -84,9 +87,9 @@ function pmprolpv_settings_field_redirect_page() {
  * @since 0.3.0
  */
 function pmprolpv_settings_field_use_js() {
-	$use_js = get_option('pmprolpv_use_js');
+	$use_js = get_option( 'pmprolpv_use_js' );
 	?>
-	<input value="1" type="checkbox" id="use_js" name="pmprolpv_use_js" <?php checked($use_js, 1); ?>>
+	<input value="1" type="checkbox" id="use_js" name="pmprolpv_use_js" <?php checked( $use_js, 1 ); ?>>
 	<?php
 }
 
@@ -100,4 +103,4 @@ function pmprolpv_settings_field_use_js() {
 	</form>
 <?php
 
-require_once(PMPRO_DIR . '/adminpages/admin_footer.php');
+require_once( PMPRO_DIR . '/adminpages/admin_footer.php' );
