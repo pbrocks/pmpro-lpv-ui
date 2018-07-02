@@ -1,7 +1,6 @@
 <?php
 
-namespace PMPro_WP_Customizer\inc\classes;
-
+// namespace PMPro_WP_Customizer\inc\classes;
 defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 
 if ( ! class_exists( 'WP_Customize_Control' ) ) {
@@ -9,6 +8,7 @@ if ( ! class_exists( 'WP_Customize_Control' ) ) {
 }
 
 class Soderland_Toggle_Control extends \WP_Customize_Control {
+
 	public $type = 'ios';
 	static $instances = 0;
 	public $instance;
@@ -62,7 +62,7 @@ class Soderland_Toggle_Control extends \WP_Customize_Control {
 			}
 
 		';
-		wp_add_inline_style( 'pure-css-toggle-buttons' , $css );
+		wp_add_inline_style( 'pure-css-toggle-buttons', $css );
 	}
 
 	/**

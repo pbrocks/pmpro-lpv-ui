@@ -1,10 +1,10 @@
 <?php
 
-namespace PMPro_LPV_UI\inc\classes;
-
+// namespace PMPro_LPV_UI\inc\classes;
 defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 
 class PMPro_LPV_Customizer {
+
 
 	public static function init() {
 		add_action( 'customize_register', array( __CLASS__, 'engage_the_customizer' ) );

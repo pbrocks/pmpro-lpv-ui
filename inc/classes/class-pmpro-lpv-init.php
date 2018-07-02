@@ -5,19 +5,6 @@ defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 
 class PMPro_LPV_Init {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 	/**
 	 * [init description]
 	 *
