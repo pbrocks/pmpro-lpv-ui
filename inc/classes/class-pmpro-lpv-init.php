@@ -18,12 +18,6 @@ class PMPro_LPV_Init {
 
 
 
-
-
-
-
-
-
 	/**
 	 * [init description]
 	 *
@@ -35,6 +29,7 @@ class PMPro_LPV_Init {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'lpv_admin_enqueue' ) );
 		add_action( 'wp_footer', array( __CLASS__, 'lpv_notification_bar' ) );
 		add_action( 'wp_head', array( __CLASS__, 'pbrx_header_message' ) );
+		add_filter( 'lpv_open_todo', array( __CLASS__, 'lpv_open_todo_message' ) );
 	}
 	/**
 	 * Customizer manager demo
@@ -60,8 +55,17 @@ class PMPro_LPV_Init {
 		echo '<li> * Banner shows on bottom with counts on first view of single post.</li>';
 		echo '<li> * Banner does not show on archive pages only on single posts.</li>';
 		echo '<li> * After last view available banner says you have no views remaining, provides link to subcribe/join (levels page) </li>';
+		echo '<li> * * NumberFormatter is a problem - removing for now</li>';
+		echo '<li> * ' . apply_filters( 'lpv_open_todo', 'lpv_open_todo filter here' ) . '</li>';
 		echo '</ul>';
 	}
+
+
+	public static function lpv_open_todo_message( $example ) {
+		// Maybe modify $example in some way.
+		return $example;
+	}
+
 	/**
 	 * pbrx_modal_header Diagnostic info
 	 *
@@ -81,8 +85,7 @@ class PMPro_LPV_Init {
 		<?php
 		$cur_usr_ary = get_pmpro_member_array( 1 );
 		$cur_lev = $cur_usr_ary['level_id'];
-		$xyz = basename( __FILE__ );
-		$xyz = ' Limit ' . PMPRO_LPV_LIMIT . ' per ' . PMPRO_LPV_LIMIT_PERIOD . ' | js ' . $yep_js . ' | Current Level ' . $cur_lev . ' |';
+		$xyz = ' | Current Level ' . $cur_lev . ' | Limit ' . PMPRO_LPV_LIMIT . ' per ' . PMPRO_LPV_LIMIT_PERIOD;
 		if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
 			$button_value = 'Reset Cookie';
 			// $button_value = 3600 * 24 * 100 . ' seconds';
@@ -98,7 +101,7 @@ class PMPro_LPV_Init {
 		<?php
 		$values = pmpro_lpv_cookie_values();
 		// print_r( $values );
-		$header = '<h3 id="lpv-head">Count <span id="lpv_counter"></span>' . $xyz . ' <br> ' . $stg . '</h3><div id="data-returned">data-returned here</div><div id="demo">demo</div>';
+		$header = '<h3 id="lpv-head">Count <span id="lpv_counter"></span>' . $xyz . ' <br> ' . $stg . '<div id="data-returned">data-returned here</div></h3>';
 		// if ( current_user_can( 'manage_options' ) ) {
 		echo $header;
 		// }
@@ -109,8 +112,8 @@ class PMPro_LPV_Init {
 	}
 
 	public static function lpv_header_enqueue() {
-		wp_enqueue_style( 'lpv-head', plugins_url( 'css/lpv-head.css', dirname( __FILE__ ) ) );
-
+		wp_register_style( 'lpv-head', plugins_url( 'css/lpv-head.css', dirname( __FILE__ ) ) );
+		wp_enqueue_style( 'lpv-head' );
 		wp_register_script( 'lpv-diagnostics', plugins_url( '/js/lpv-diagnostics.js', dirname( __FILE__ ) ), array( 'jquery' ), false, false );
 		wp_localize_script(
 			'lpv-diagnostics',
@@ -130,36 +133,13 @@ class PMPro_LPV_Init {
 		// Check for past views. Needs to check if the post is locked at all by default.
 		if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
 			global $current_user;
-
-			$limit = intval( PMPRO_LPV_LIMIT );
-			// $remaining_views = $limit - ( $limitparts[1] + 1 );
-			$remaining_views = 11;
-			if ( 1 === PMPRO_LPV_USE_JAVASCRIPT ) {
-				$yep_js = 'true';
-			}
-
-			// $use_js = get_option( 'pmprolpv_use_js' );
-			// define( 'PMPRO_LPV_USE_JAVASCRIPT', $use_js );
-			/**
-			 * If php-intl isn't enabled on the server,
-			 * the NumberFormatter class won't be present,
-			 * so we create a backup plan.
-			 */
-			if ( class_exists( 'NumberFormatter' ) ) {
-				$formatter = new NumberFormatter( 'en', NumberFormatter::SPELLOUT );
-				$formatted = $formatter->format( $remaining_views );
-			} else {
-				$formatted = number_format( $remaining_views );
-			}
-
-				// $article_s = sprintf( _n( '%s free article', '%s free articles', $formatted, 'paid-memberships-pro' ), number_format_i18n( $formatted ) );
+			$article_s = sprintf( _n( '%s free article', '%s free articles', $formatted, 'paid-memberships-pro' ), number_format_i18n( $formatted ) );
 				?>
 				<div id="lpv-footer" style="z-index:333;">
-			You have <span style="color: #B00000;">formatted <?php echo esc_html( $formatted ); ?> of <span id="lpv_count"><?php echo PMPRO_LPV_LIMIT; ?></span> </span> remaining. 
-			<a href="<?php echo wp_login_url( get_permalink() ); ?>" title="Log in">Log in</a> or <a href="<?php echo pmpro_url( 'levels' ); ?>" title="Subscribe now">Subscribe</a> for unlimited access.
+			You have <span style="color: #B00000;"> <span id="lpv_count"><img src="<?php echo esc_html( admin_url( '/images/spinner.gif' ) ); ?>" /></span> of <span id="lpv_limit"><img src="<?php echo esc_html( admin_url( '/images/spinner.gif' ) ); ?>" /></span> </span> remaining. 
+			<a href="<?php echo wp_login_url( get_permalink() ); ?>" title="Log in">Log in</a> or <a href="<?php echo pmpro_url( 'levels' ); ?>" title="Subscribe now">Subscribe</a> for unlimited access. 
 			</div>
 			<?php
-			// }
 		}
 	}
 }
