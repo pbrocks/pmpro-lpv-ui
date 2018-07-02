@@ -49,15 +49,15 @@ function pmpro_lpv_ui_init() {
 add_action( 'init', 'pmpro_get_user_level' );
 
 function get_pmpro_member_array( $user_id ) {
-	$user_object = new WP_User( $user_id );
-	;
-	$member_data = get_userdata( $user_object->ID );
-	$member_object = pmpro_getMembershipLevelForUser( $member_data->ID );
-	$member_level['level_id'] = $member_object->id;
-	$member_level['level_name'] = $member_object->name;
-	$member_level['level_description'] = $member_object->description;
-	$member_level['subscription_id'] = $member_object->subscription_id;
-	return $member_level;
+	// $user_object = new WP_User( $user_id );
+	// ;
+	// $member_data = get_userdata( $user_object->ID );
+	// $member_object = pmpro_getMembershipLevelForUser( $member_data->ID );
+	// $member_level['level_id'] = $member_object->id;
+	// $member_level['level_name'] = $member_object->name;
+	// $member_level['level_description'] = $member_object->description;
+	// $member_level['subscription_id'] = $member_object->subscription_id;
+	// return $member_level;
 }
 /**
  * Add a page to the dashboard menu.
@@ -343,15 +343,6 @@ function set_pmpro_lpv_redirect() {
 	wp_redirect( $redirect_url );
 	exit;
 }
-
-
-function test_ajax_data() {
-	// wp_register_script( 'set-get-cookies', plugins_url( '/js/set-get-cookies.js', __FILE__ ), array( 'jquery' ), false, false );
-	// wp_enqueue_script( 'set-get-cookies' );
-	// wp_register_script( 'set-cookie-2009', plugins_url( '/js/set-cookie-2009.js', __FILE__ ), array( 'jquery' ), false, false );
-	// wp_enqueue_script( 'set-cookie-2009' );
-}
-add_action( 'wp_enqueue_scripts', 'test_ajax_data' );
 
 /**
  * Function to add links to the plugin action links

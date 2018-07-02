@@ -60,38 +60,40 @@ class PMPro_LPV_Init {
 	 */
 	public static function pbrx_header_message() {
 		global $current_user;
-		$stg = '';
-		if ( true == PMPRO_LPV_USE_JAVASCRIPT ) {
-			$yep_js = 'true';
-		} else {
-			$yep_js = 'nope';
+		if ( true == get_option( 'header_diagnostic_toggle' ) ) {
+			$stg = '';
+			if ( true == PMPRO_LPV_USE_JAVASCRIPT ) {
+				$yep_js = 'true';
+			} else {
+				$yep_js = 'nope';
+			}
+			?>
+			<form id="lpv-diagnostics-form">
+			<input type="hidden" name="hidden" value="lpv-diagnostics-test">
+			<?php
+			$cur_usr_ary = get_pmpro_member_array( 1 );
+			$cur_lev = $cur_usr_ary['level_id'];
+			$xyz = ' | Current Level ' . $cur_lev . ' | Limit ' . PMPRO_LPV_LIMIT . ' per ' . PMPRO_LPV_LIMIT_PERIOD;
+			if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
+				$button_value = 'Reset Cookie';
+				// $button_value = 3600 * 24 * 100 . ' seconds';
+				$button = '<input type="hidden" name="token" value="reset">';
+				$stg = ' $_COOKIE(\'pmpro_lpv_count\') SET !! ' . $button;
+			} else {
+				$button_value = 'Set Cookie';
+				$button = '<input type="hidden" name="token" value="set">';
+				$stg = ' $_COOKIE(\'pmpro_lpv_count\') NOT set ?!?!? ' . $button;
+			}
+			?>
+			</form>
+			<?php
+			$values = pmpro_lpv_cookie_values();
+			// print_r( $values );
+			$header = '<h3 id="lpv-head">Count <span id="lpv_counter"></span>' . $xyz . ' <br> ' . $stg . '<div id="data-returned">data-returned here</div></h3>';
+			// if ( current_user_can( 'manage_options' ) ) {
+			echo $header;
+			// }
 		}
-		?>
-		<form id="lpv-diagnostics-form">
-		<input type="hidden" name="hidden" value="lpv-diagnostics-test">
-		<?php
-		$cur_usr_ary = get_pmpro_member_array( 1 );
-		$cur_lev = $cur_usr_ary['level_id'];
-		$xyz = ' | Current Level ' . $cur_lev . ' | Limit ' . PMPRO_LPV_LIMIT . ' per ' . PMPRO_LPV_LIMIT_PERIOD;
-		if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
-			$button_value = 'Reset Cookie';
-			// $button_value = 3600 * 24 * 100 . ' seconds';
-			$button = '<input type="hidden" name="token" value="reset">';
-			$stg = ' $_COOKIE(\'pmpro_lpv_count\') SET !! ' . $button;
-		} else {
-			$button_value = 'Set Cookie';
-			$button = '<input type="hidden" name="token" value="set">';
-			$stg = ' $_COOKIE(\'pmpro_lpv_count\') NOT set ?!?!? ' . $button;
-		}
-		?>
-		</form>
-		<?php
-		$values = pmpro_lpv_cookie_values();
-		// print_r( $values );
-		$header = '<h3 id="lpv-head">Count <span id="lpv_counter"></span>' . $xyz . ' <br> ' . $stg . '<div id="data-returned">data-returned here</div></h3>';
-		// if ( current_user_can( 'manage_options' ) ) {
-		echo $header;
-		// }
 	}
 
 	public static function lpv_admin_enqueue() {

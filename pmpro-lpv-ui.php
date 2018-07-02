@@ -13,4 +13,4 @@ include( 'inc/classes/class-pmpro-lpv-customizer.php' );
 include( 'inc/classes/class-soderland-toggle-control.php' );
 
 PMPro_LPV_Init::init();
-// PMPro_LPV_Customizer::init();
+PMPro_LPV_Customizer::init();

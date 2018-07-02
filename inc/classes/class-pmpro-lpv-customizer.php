@@ -42,7 +42,7 @@ class PMPro_LPV_Customizer {
 				'priority' => 10,
 				'capability' => 'edit_theme_options',
 				'description' => 'Wnat to switch pages via javascript',
-				'title' => __( 'PMPro Admin Panel', 'pmpro-customizer' ),
+				'title' => __( 'PMPro Admin Panel', 'pmpro-lpv-customizer' ),
 			)
 		);
 	}
@@ -61,96 +61,59 @@ class PMPro_LPV_Customizer {
 			array(
 				'title'          => 'PMPro Controls',
 				'priority'       => 9,
-				'panel'          => 'pmpro_customizer_panel',
-				'description' => 'This is a description of this text setting in the PMPro Customizer Controls section of the PMPro panel',
+				// 'panel'          => 'pmpro_customizer_panel',
+				'description' => 'This is a description of this text setting in the PMPro Customizer Controls section',
 			)
 		);
 
 		$pmpro_manager->add_setting(
-			'page_comment_toggle',
+			'header_diagnostic_toggle',
 			array(
-				'default' => 1,
+				'default'    => 1,
+				'type'       => 'option',
+				'transport'  => 'refresh',
 			)
 		);
 
+		// include plugin_dir_path( __FILE__ ) . 'class-soderland-toggle-control.php';
 		$pmpro_manager->add_control(
-			new Soderland_Toggle_Control(
-				$pmpro_manager,
-				'page_comment_toggle',
-				array(
-					'label'     => __( 'Show PMPro Controls', 'pmpro-customizer' ),
-					'section'   => 'pmpro_section',
-					'priority'  => 10,
-					'type'      => 'ios',
-				)
-			)
-		);
-
-		$pmpro_manager->add_setting(
-			'pmpro[the_header]',
+			// new Soderland_Toggle_Control(
+				// $pmpro_manager,
+			'header_diagnostic_toggle',
 			array(
-				'default' => 'header-text default text',
-				'type' => 'option',
-				'transport' => 'refresh', // refresh (default), postMessage
-			// 'capability' => 'edit_theme_options',
-			// 'sanitize_callback' => 'sanitize_key'
-			)
-		);
-
-		$pmpro_manager->add_control(
-			'pmpro[the_header]',
-			array(
+				'label'     => __( 'Show PMPro Header Diagnostic', 'pmpro-lpv-customizer' ),
+				'settings'   => 'header_diagnostic_toggle',
 				'section'   => 'pmpro_section',
-				'type'   => 'text', // text (default), checkbox, radio, select, dropdown-pages
-				'label'       => 'Change Header Text',
-				'settings'    => 'pmpro[the_header]',
-				'description' => 'Description of this text input setting in ' . __FUNCTION__ . ' for Header Text',
+				'priority'  => 10,
+				// 'type'      => 'ios',
+				'type'      => 'checkbox',
 			)
-		);
-
-		$pmpro_manager->add_setting(
-			'pmpro_footer_text',
-			array(
-				'default' => 'footer-text default text',
-				'type' => 'option',
-				'transport' => 'refresh', // refresh (default), postMessage
-			// 'capability' => 'edit_theme_options',
-			// 'sanitize_callback' => 'sanitize_key'
-			)
-		);
-
-		$pmpro_manager->add_control(
-			'pmpro_footer_text',
-			array(
-				'section'   => 'pmpro_section',
-				'type'   => 'text', // text (default), checkbox, radio, select, dropdown-pages
-				'label'       => 'Change Footer Text',
-				'settings'    => 'pmpro_footer_text',
-				'description' => 'Description of this text input setting in ' . __FUNCTION__ . ' for Default Footer Text',
-			)
+			// )
 		);
 
 		/**
 		 * Radio control
 		 */
 		$pmpro_manager->add_setting(
-			'menu_radio',
+			'lpv_response_radio',
 			array(
 				'default'        => '2',
+				'transport'           => 'refresh',
 			)
 		);
 
 		$pmpro_manager->add_control(
-			'menu_radio',
+			'lpv_response_radio',
 			array(
 				'section'     => 'pmpro_section',
 				'type'        => 'radio',
-				'label'       => 'Menu Text Radio Buttons',
-				'description' => 'Description of this radio setting in ' . __FUNCTION__,
+				'settings'    => 'lpv_response_radio',
+				'label'       => 'Limit Post View Response',
+				'description' => 'After the limit has been reached, what behavior do you want to see ',
 				'choices'     => array(
-					'1' => 'left',
-					'2' => 'center',
-					'3' => 'right',
+					'1' => 'Footer enlargement',
+					'2' => 'Pop Up',
+					'3' => 'Redirect',
 				),
 				'priority'    => 11,
 			)

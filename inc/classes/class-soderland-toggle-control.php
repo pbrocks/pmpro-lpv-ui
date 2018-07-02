@@ -7,7 +7,7 @@ if ( ! class_exists( 'WP_Customize_Control' ) ) {
 	return null;
 }
 
-class Soderland_Toggle_Control extends \WP_Customize_Control {
+class Soderland_Toggle_Control extends WP_Customize_Control {
 
 	public $type = 'ios';
 	static $instances = 0;
@@ -18,17 +18,18 @@ class Soderland_Toggle_Control extends \WP_Customize_Control {
 	 *
 	 * @since 3.4.0
 	 */
-	// public function __construct() {
-	// add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
-	// $this->instance = ++self::$instances;
-	// }
+	public function __construct() {
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue' ) );
+		add_action( 'init', array( $this, 'render_content' ) );
+		$this->instance = ++self::$instances;
+	}
 	/**
 	 * Enqueue scripts/styles.
 	 *
 	 * @since 3.4.0
 	 */
 	public static function init() {
-		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
+		// add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
 		add_action( 'init', array( __CLASS__, 'render_content' ) );
 		// $this->instance = ++self::$instances;
 	}
