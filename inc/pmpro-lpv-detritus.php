@@ -62,11 +62,11 @@ function get_pmpro_member_array( $user_id ) {
 /**
  * Add a page to the dashboard menu.
  */
-function pbrx_menu_menu() {
-	add_dashboard_page( __( 'My Plugin', 'textdomain' ), __( 'My Plugin', 'textdomain' ), 'read', 'wpdocs-unique-identifier', 'pbrx_menu_function' );
+function pmpro_lpv_dashboard_menu() {
+	add_dashboard_page( __( 'LPV Dashboard', 'pmpro-lpv-ui' ), __( 'LPV Dashboard', 'pmpro-lpv-ui' ), 'manage_options', 'pmpro-lpv-dashboard.php', 'pmpro_lpv_dashboard_page' );
 }
-add_action( 'admin_menu', 'pbrx_menu_menu' );
-function pbrx_menu_function() {
+// add_action( 'admin_menu', 'pmpro_lpv_dashboard_menu' );
+function pmpro_lpv_dashboard_page() {
 	echo '<div class="wrap">';
 	echo '<h2>' . __FUNCTION__ . '</h2>';
 	$user_id = 1;
@@ -92,8 +92,8 @@ function pmpro_get_user_level() {
 	return $level_id;
 }
 
-add_action( 'wp_ajax_tie_into_lpv_diagnostics', 'pbrx_header_set_cookie' );
-add_action( 'wp_ajax_nopriv_tie_into_lpv_diagnostics', 'pbrx_header_set_cookie' );
+// add_action( 'wp_ajax_tie_into_lpv_diagnostics', 'pbrx_header_set_cookie' );
+// add_action( 'wp_ajax_nopriv_tie_into_lpv_diagnostics', 'pbrx_header_set_cookie' );
 // add_action( 'init', 'pbrx_header_set_cookie' );
 /**
  * [pbrx_header_set_cookie This AJAX is going to run on page load

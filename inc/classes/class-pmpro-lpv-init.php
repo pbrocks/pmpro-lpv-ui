@@ -6,17 +6,22 @@ defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 class PMPro_LPV_Init {
 
 	/**
-	 * [init description]
+	 * init     Using static functions for our classes -- seems to be slightly more performant
 	 *
 	 * @return [type] [description]
 	 */
 	public static function init() {
+		// Adding a subment to hook into other PMPro menus
 		add_action( 'admin_menu', array( __CLASS__, 'lpv_admin_menu' ) );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'lpv_header_enqueue' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'lpv_admin_enqueue' ) );
 		add_action( 'wp_footer', array( __CLASS__, 'lpv_notification_bar' ) );
 		add_action( 'wp_head', array( __CLASS__, 'pbrx_header_message' ) );
+
 		add_filter( 'lpv_open_todo', array( __CLASS__, 'lpv_open_todo_message' ) );
+
+		add_action( 'wp_ajax_tie_into_lpv_diagnostics', array( __CLASS__, 'pbrx_header_set_cookie' ) );
+		add_action( 'wp_ajax_nopriv_tie_into_lpv_diagnostics', array( __CLASS__, 'pbrx_header_set_cookie' ) );
 	}
 	/**
 	 * Customizer manager demo
@@ -27,8 +32,8 @@ class PMPro_LPV_Init {
 	public static function lpv_admin_menu() {
 		add_submenu_page(
 			'pmpro-membershiplevels',
-			'PMPro Limit Post Views',
-			'LPV Class',
+			__( 'PMPro Limit Post Views', 'pmpro-lpv-ui' ),
+			__( 'LPV Class', 'pmpro-lpv-ui' ),
 			apply_filters( 'pmpro_edit_member_capability', 'manage_options' ),
 			'pmpro-limitpostviews',
 			array( __CLASS__, 'pmprolpv_settings_page' )
@@ -47,7 +52,12 @@ class PMPro_LPV_Init {
 		echo '</ul>';
 	}
 
-
+	/**
+	 * [lpv_open_todo_message description]
+	 *
+	 * @param  [type] $example [description]
+	 * @return [type]          [description]
+	 */
 	public static function lpv_open_todo_message( $example ) {
 		// Maybe modify $example in some way.
 		return $example;
@@ -96,10 +106,20 @@ class PMPro_LPV_Init {
 		}
 	}
 
+	/**
+	 * [lpv_admin_enqueue description]
+	 *
+	 * @return [type] [description]
+	 */
 	public static function lpv_admin_enqueue() {
 		wp_enqueue_style( 'lpv-admin', plugins_url( '../css/lpv-admin.css', __FILE__ ) );
 	}
 
+	/**
+	 * [lpv_header_enqueue description]
+	 *
+	 * @return [type] [description]
+	 */
 	public static function lpv_header_enqueue() {
 		wp_register_style( 'lpv-head', plugins_url( 'css/lpv-head.css', dirname( __FILE__ ) ) );
 		wp_enqueue_style( 'lpv-head' );
@@ -118,10 +138,49 @@ class PMPro_LPV_Init {
 		wp_enqueue_script( 'lpv-diagnostics' );
 	}
 
+	/**
+	 * [pbrx_header_set_cookie This AJAX is going to run on page load
+	 *                  It'll be too late for php to set a cookie, but
+	 *                  we can do so with Javascript
+	 *
+	 * @return [type] [description]
+	 */
+	public static function pbrx_header_set_cookie() {
+		$ajax_data = $_POST;
+		$month = date( 'n', current_time( 'timestamp' ) );
+		if ( ! empty( $_COOKIE['pmpro_lpv_count'] ) ) {
+			global $current_user;
+			$parts = explode( ';', $_COOKIE['pmpro_lpv_count'] );
+			$limitparts = explode( ',', $parts[0] );
+			// Get the level limit for the current user.
+			if ( defined( 'PMPRO_LPV_LIMIT' ) && PMPRO_LPV_LIMIT > 0 ) {
+				$limit = intval( PMPRO_LPV_LIMIT );
+			}
+			$ajax_data['parts'] = $parts;
+			$ajax_data['limitparts'] = $limitparts;
+			$ajax_data['level'] = $limitparts[0];
+			$ajax_data['view'] = 13;
+			$ajax_data['limit'] = $limit;
+		}
+
+		$curlev = 4;
+		$curviews = $limitparts[1];
+		$expires = date( 'Y-m-d', strtotime( '+30 days' ) );
+		$cookiestr .= "$curlev,$curviews";
+		echo json_encode( $ajax_data );
+
+		exit();
+	}
+	/**
+	 * [lpv_notification_bar description]
+	 *
+	 * @return [type] [description]
+	 */
 	public static function lpv_notification_bar() {
 		// Check for past views. Needs to check if the post is locked at all by default.
 		if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
 			global $current_user;
+
 			$article_s = sprintf( _n( '%s free article', '%s free articles', $formatted, 'paid-memberships-pro' ), number_format_i18n( $formatted ) );
 				?>
 				<div id="lpv-footer" style="z-index:333;">

@@ -22,11 +22,11 @@ jQuery(document).ready(function($) {
 	if ( isNaN(count) ) {
 		count = 0;
 	}
-	if ( count == 0 ) {
-		$('#lpv-footer').css( 'display','none'); 
-	} else {
-		$('#lpv-footer').css( 'display','block'); 
-	} 
+	// if ( count == 0 ) {
+		// $('#lpv-footer').css( 'display','none'); 
+	// } else {
+		// $('#lpv-footer').css( 'display','block'); 
+	// } 
 	$.ajax({
 		type: "POST",
 		url: lpv_diagnostics_object.lpv_diagnostics_ajaxurl,
@@ -75,9 +75,10 @@ jQuery(document).ready(function($) {
 			if ( upcount > 0 ) {
 				$('#lpv_count').html(remaining);
 				$('#lpv_limit').html(obj.limit);
-			} else {
-				$('#lpv-footer').css( 'display','none'); 
 			}
+			 // else {
+				// $('#lpv-footer').css( 'display','none'); 
+			// }
 			// window.location = obj.redirect;
 		},
 		error: function( jqXHR, textStatus, errorThrown ){

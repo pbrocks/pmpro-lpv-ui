@@ -8,6 +8,7 @@ class PMPro_LPV_Customizer {
 
 	public static function init() {
 		add_action( 'customize_register', array( __CLASS__, 'engage_the_customizer' ) );
+		add_action( 'admin_menu',array( __CLASS__, 'pmpro_lpv_dashboard_menu' ) );
 		// add_action( 'wp_enqueue_scripts', array( __CLASS__, 'customizer_enqueue' ) );
 		// add_action( 'admin_enqueue_scripts', array( __CLASS__, 'customizer_enqueue' ) );
 		// add_action( 'customize_controls_init', array( __CLASS__, 'set_customizer_preview_url' ) );
@@ -24,10 +25,38 @@ class PMPro_LPV_Customizer {
 		self::pmpro_section( $pmpro_manager );
 	}
 
+	/**
+	 * [customizer_enqueue description]
+	 *
+	 * @return [type] [description]
+	 */
 	public static function customizer_enqueue() {
 		wp_enqueue_style( 'customizer-section', plugins_url( '../css/customizer-section.css', __FILE__ ) );
 	}
-
+	/**
+	 * [pmpro_lpv_dashboard_menu description]
+	 *
+	 * @return [type] [description]
+	 */
+	public static function pmpro_lpv_dashboard_menu() {
+		add_dashboard_page( __( 'LPV Dashboard', 'pmpro-lpv-ui' ), __( 'LPV Dashboard', 'pmpro-lpv-ui' ), 'manage_options', 'pmpro-lpv-dashboard.php', 'pmpro_lpv_dashboard_page' );
+	}
+	/**
+	 * [pmpro_lpv_dashboard_page description]
+	 *
+	 * @return [type] [description]
+	 */
+	public static function pmpro_lpv_dashboard_page() {
+		echo '<div class="wrap">';
+		echo '<h2>' . __FUNCTION__ . '</h2>';
+		$user_id = 1;
+		$array = get_pmpro_member_array( $user_id );
+		echo '<pre> get_pmpro_member_array ';
+		echo '<h2>' . $array['level_id'] . '</h2>';
+		print_r( $array );
+		echo '</pre>';
+		echo '</div>';
+	}
 
 	/**
 	 * [engage_customizer description]
