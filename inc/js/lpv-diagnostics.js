@@ -44,7 +44,7 @@ jQuery(document).ready(function($) {
 			limit        : lpv_diagnostics_object.lpv_diagnostics_limit,
 			redirect     : lpv_diagnostics_object.lpv_diagnostics_redirect,
 			phpexpire    : lpv_diagnostics_object.lpv_diagnostics_php_expire,
-			response     : lpv_diagnostics_object.lpv_diagnostics_response,
+			response     : lpv_diagnostics_object.lpv_diagnostics_action,
 
 			// Admin stuff
 			script_name  : 'lpv-diagnostics.js',
@@ -53,7 +53,10 @@ jQuery(document).ready(function($) {
 		},
 		// dataType: "JSON",
 		success:function( data ) {
-			$('.modal-body').html(data);
+			var obj = JSON.parse(data);
+			var d = new Date(obj.phpexpire);
+			var exp = d.toUTCString();
+			// $('.modal-body').html(data);
 
 			elem = $('body');
 			if (elem.hasClass('single')){
@@ -70,7 +73,7 @@ jQuery(document).ready(function($) {
 			var remaining = obj.limit - upcount;
 			document.cookie="pmpro_lpv_count=" + lpv_array + '; expires=' + exp + ';path=/';
 
-			$('#data-returned').html('Need to calculate expiration<br>Set cookie at 0, separately increment<br>Cookie Set ' + "pmpro_lpv_count=" + upcount + '; expires=' + exp );
+			$('#data-returned').html('Set cookie at 0, separately increment<br>Cookie Set ' + "pmpro_lpv_count=" + upcount + '; expires=' + exp );
 			// if ( upcount == 0 ) {
 			if ( upcount > 0 ) {
 				$('#lpv_count').html(remaining);
@@ -85,6 +88,9 @@ jQuery(document).ready(function($) {
 			}
 			if ( 1 == remaining && 'popup' == obj.response ) {
 				$('.modal').css({'display':'block'});
+			}
+			if ( 1 == remaining && 'popup' == obj.redirect ) {
+				document.location('https://sidetrack.studio');
 			}
 			 // else {
 				// $('#lpv-footer').css( 'display','none'); 

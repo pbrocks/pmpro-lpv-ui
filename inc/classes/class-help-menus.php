@@ -5,7 +5,7 @@ defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 class Help_Menus {
 
 	public static function init() {
-		// add_action( 'admin_menu', array( __CLASS__, 'test_admin_help_tab' ) );
+		// add_action( 'admin_menu', array( __CLASS__, 'lpv_admin_help_tab' ) );
 		add_action( 'admin_head', array( __CLASS__, 'add_help_screen_to_pmpro' ) );
 		add_action( 'admin_head', array( __CLASS__, 'add_context_menu_help' ) );
 		add_action( 'admin_head', array( __CLASS__, 'add_help_sidebar' ) );
@@ -20,13 +20,13 @@ class Help_Menus {
 
 	}
 
-	public static function pbrx_add_help() {
+	public static function pmpro_lpv_add_help() {
 		// We are in the correct screen because we are taking advantage of the load-* action (below)
 		$screen = get_current_screen();
 		// $screen->remove_help_tabs();
 		$screen->add_help_tab(
 			array(
-				'id'       => 'pbrx-default',
+				'id'       => 'pmpro-lpv-default',
 				'title'    => __( 'Default' ),
 				'content'  => 'This is where I would provide tabbed help to the user on how everything in my admin panel works. Formatted HTML works fine in here too',
 			)
@@ -39,28 +39,28 @@ class Help_Menus {
 		);
 	}
 
-	public static function test_admin_help_tab() {
-		$test_help_page = add_options_page( __( 'Test Help Tab Page', 'text_domain' ), __( 'Test Help Tab Page', 'text_domain' ), 'manage_options', 'text_domain', 'test_help_admin_page' );
+	public static function lpv_admin_help_tab() {
+		$lpv_help_page = add_dashboard_page( __( 'PMPro LPV Help Page', 'text_domain' ), __( 'PMPro LPV Help Page', 'text_domain' ), 'manage_options', 'text_domain', 'lpv_help_admin_page' );
 
-		add_action( 'load-' . $test_help_page, 'admin_add_help_tab' );
+		add_action( 'load-' . $lpv_help_page, 'admin_add_help_tab' );
 	}
 
 	public static function admin_add_help_tab() {
-		global $test_help_page;
+		global $lpv_help_page;
 		$screen = get_current_screen();
 
 		// Add my_help_tab if current screen is My Admin Page
 		$screen->add_help_tab(
 			array(
-				'id'    => 'test_help_tab',
-				'title' => __( 'Test Help Tab' ),
+				'id'    => 'lpv_help_tab',
+				'title' => __( 'PMPro LPV Help' ),
 				'content'   => '<p>' . __( 'Use this field to describe to the user what text you want on the help tab.' ) . '</p>',
 			)
 		);
 	}
 
-	public static function test_help_admin_page() {
-		echo '<h3>test_help_admin_page</h3>';
+	public static function lpv_help_admin_page() {
+		echo '<h3>lpv_help_admin_page</h3>';
 	}
 
 	// adds a sidebar to the help context menu
