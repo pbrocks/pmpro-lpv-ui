@@ -20,9 +20,11 @@
 	padding: 1rem 0;
 	position: fixed;
 	width:100%;
-	transition: all 1.3s 1s;
+	transition: all 0.3s ease-in;
 }
 #lpv-footer.grow {
-	padding: 11rem 0;
+	padding: 15rem 0;
+	transform: scale(2);
+	font-size: 3rem;
 }
 

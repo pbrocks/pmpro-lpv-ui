@@ -70,11 +70,19 @@ jQuery(document).ready(function($) {
 			var remaining = obj.limit - upcount;
 			document.cookie="pmpro_lpv_count=" + lpv_array + '; expires=' + exp + ';path=/';
 
-			$('#data-returned').html('<br>Cookie Set ' + "pmpro_lpv_count=" + upcount + '; expires=' + exp );
+			$('#data-returned').html('Need to calculate expiration<br>Set cookie at 0, separately increment<br>Cookie Set ' + "pmpro_lpv_count=" + upcount + '; expires=' + exp );
 			// if ( upcount == 0 ) {
 			if ( upcount > 0 ) {
 				$('#lpv_count').html(remaining);
 				$('#lpv_limit').html(obj.limit);
+			}  else {
+				$('#lpv_count').html(obj.limit);
+				$('#lpv_limit').html(obj.limit);
+			}
+			if ( 1 == remaining ) {
+				$('#lpv-footer').css( 'padding','11rem 0');
+				// $('#footer-text').html('<h2>FFS</h2>');
+
 			}
 			 // else {
 				// $('#lpv-footer').css( 'display','none'); 
