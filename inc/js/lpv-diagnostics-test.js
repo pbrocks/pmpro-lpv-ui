@@ -44,7 +44,7 @@ jQuery(document).ready(function($) {
 			limit        : lpv_diagnostics_object.lpv_diagnostics_limit,
 			redirect     : lpv_diagnostics_object.lpv_diagnostics_redirect,
 			phpexpire    : lpv_diagnostics_object.lpv_diagnostics_php_expire,
-			response     : lpv_diagnostics_object.lpv_diagnostics_action,
+			response     : lpv_diagnostics_object.lpv_diagnostics_response,
 
 			// Admin stuff
 			script_name  : 'lpv-diagnostics.js',
@@ -53,10 +53,7 @@ jQuery(document).ready(function($) {
 		},
 		// dataType: "JSON",
 		success:function( data ) {
-			var obj = JSON.parse(data);
-			var d = new Date(obj.phpexpire);
-			var exp = d.toUTCString();
-			// $('.modal-body').html(data);
+			$('.modal-body').html(data);
 
 			elem = $('body');
 			if (elem.hasClass('single')){
