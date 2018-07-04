@@ -41,6 +41,12 @@ class PMPro_LPV_Init {
 	}
 	public static function pmpro_lpv_settings_page() {
 		echo '<h3>' . __FILE__ . '</h3>';
+		$levels = pmpro_getAllLevels( true, true );
+		$levels[0] = new stdClass();
+		$levels[0]->name = __( 'Non-members', 'pmpro' );
+		echo '<pre>';
+		print_r( $levels );
+		echo '</pre>';
 		echo '<ul>';
 		echo '<li> * Cookie is set on landing on Home, no banner shown.li>';
 		echo '<li> * User triggers count on single posts.</li>';
@@ -168,49 +174,12 @@ class PMPro_LPV_Init {
 				'lpv_diagnostics_nonce' => wp_create_nonce( 'lpv-diagnostics-nonce' ),
 				'lpv_diagnostics_user_level' => self::pmpro_get_user_level(),
 				'lpv_diagnostics_redirect' => self::get_pmpro_lpv_redirect(),
-				'lpv_diagnostics_action'   => get_option( 'lpv_response_radio' ),
-				'lpv_diagnostics_php_expire' => date( 'Y-m-d H:i:s', strtotime( 'today + 1 week' ) ),
+				'lpv_diagnostics_response'   => self::get_pmpro_lpv_limit_response(),
+				'lpv_diagnostics_php_expire' => self::get_pmpro_lpv_period(),
 			)
 		);
 		wp_enqueue_script( 'lpv-diagnostics' );
 	}
-
-	/**
-	 * [pbrx_header_set_cookie This AJAX is going to run on page load
-	 *                  It'll be too late for php to set a cookie, but
-	 *                  we can do so with Javascript
-	 *
-	 * @return [type] [description]
-	 */
-	public static function pbrx_header_set_cookie() {
-		$ajax_data = $_POST;
-		$month = date( 'n', current_time( 'timestamp' ) );
-		if ( ! empty( $_COOKIE['pmpro_lpv_count'] ) ) {
-			global $current_user;
-			$parts = explode( ';', $_COOKIE['pmpro_lpv_count'] );
-			$limitparts = explode( ',', $parts[0] );
-			// Get the level limit for the current user.
-			if ( defined( 'PMPRO_LPV_LIMIT' ) && PMPRO_LPV_LIMIT > 0 ) {
-				$limit = intval( PMPRO_LPV_LIMIT );
-			}
-			$ajax_data['parts'] = $parts;
-			$ajax_data['limitparts'] = $limitparts;
-			$ajax_data['level'] = $limitparts[0];
-			$ajax_data['view'] = 13;
-			$ajax_data['limit'] = $limit;
-		}
-
-		$curlev = 4;
-		$curviews = $limitparts[1];
-		$expires = date( 'Y-m-d', strtotime( '+30 days' ) );
-		$cookiestr .= "$curlev,$curviews";
-		// echo json_encode( $ajax_data );
-		echo '<pre>';
-		print_r( $ajax_data );
-		echo '</pre>';
-		exit();
-	}
-
 
 	/**
 	 * [pmpro_get_user_level Return the member's level
@@ -228,11 +197,10 @@ class PMPro_LPV_Init {
 	}
 
 	/**
-	 * Redirect to  the configured page or the default levels page
+	 * Redirect to the configured page or the default levels page
 	 */
 	public static function get_pmpro_lpv_redirect() {
 		$page_id = get_option( 'pmprolpv_redirect_page' );
-
 		if ( empty( $page_id ) ) {
 			$redirect_url = pmpro_url( 'levels' );
 		} else {
@@ -240,6 +208,65 @@ class PMPro_LPV_Init {
 		}
 		return $redirect_url;
 	}
+
+	public static function get_pmpro_lpv_limit_response() {
+		$lpv_options = get_option( 'pmpro_lpv_settings' );
+		$lpv_response = get_option( 'lpv_response_radio' );
+		// if ( empty( $lpv_response ) ) {
+		// $redirect_url = pmpro_url( 'levels' );
+		// } else {
+		// $redirect_url = get_the_permalink( $lpv_response );
+		// }
+		return $lpv_response;
+	}
+
+	public static function get_pmpro_lpv_period() {
+		$lpv_options = get_option( 'pmpro_lpv_settings' );
+		$lpv_response = get_option( 'lpv_response_radio' );
+		$lpv_period = date( 'Y-m-d H:i:s', strtotime( 'now + 1 hour' ) );
+		// if ( empty( $lpv_response ) ) {
+		// $redirect_url = pmpro_url( 'levels' );
+		// } else {
+		// $redirect_url = get_the_permalink( $lpv_response );
+		// }
+		return $lpv_period;
+	}
+
+	/**
+	 * [pbrx_header_set_cookie This AJAX is going to run on page load
+	 *                  It'll be too late for php to set a cookie, but
+	 *                  we can do so with Javascript
+	 *
+	 * @return [type] [description]
+	 */
+	public static function pbrx_header_set_cookie() {
+		$ajax_data = $_POST;
+		$month = date( 'n', current_time( 'timestamp' ) );
+		if ( ! empty( $_COOKIE['pmpro_lpv_count'] ) ) {
+			global $current_user;
+			$parts = explode( '|', $_COOKIE['pmpro_lpv_count'] );
+			// Get the level limit for the current user.
+			if ( defined( 'PMPRO_LPV_LIMIT' ) && PMPRO_LPV_LIMIT > 0 ) {
+				$limit = intval( PMPRO_LPV_LIMIT );
+			}
+			$ajax_data['parts'] = $parts;
+			$ajax_data['level'] = $parts[0];
+			$ajax_data['view'] = $parts[1];
+			$ajax_data['limit'] = $parts[2];
+		}
+
+		$curlev = $parts[0];
+		$curviews = $parts[1];
+		$expires = date( 'Y-m-d', strtotime( '+30 days' ) );
+		$cookiestr .= "$curlev,$curviews";
+		// echo json_encode( $ajax_data );
+		echo '<pre>';
+		print_r( $ajax_data );
+		echo '</pre>';
+		exit();
+	}
+
+
 	/**
 	 * pmpro_lpv_modal This AJAX is going to run on page load
 	 *                  It'll be too late for php to set a cookie, but

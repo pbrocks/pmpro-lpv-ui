@@ -64,6 +64,7 @@ function pmprolpv_admin_init() {
 		$levels = pmpro_getAllLevels( true, true );
 		$levels[0] = new stdClass();
 		$levels[0]->name = __( 'Non-members', 'pmpro' );
+
 		asort( $levels );
 		foreach ( $levels as $id => $level ) {
 			$title = $level->name;
