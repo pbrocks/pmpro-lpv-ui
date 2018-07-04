@@ -96,7 +96,7 @@ class PMPro_LPV_Customizer {
 		);
 
 		$pmpro_manager->add_setting(
-			'lpv_diagnosic_header',
+			'lpv_diagnostic_header',
 			array(
 				'default'    => 1,
 				'type'       => 'option',
@@ -108,10 +108,10 @@ class PMPro_LPV_Customizer {
 		$pmpro_manager->add_control(
 			// new Soderland_Toggle_Control(
 				// $pmpro_manager,
-			'lpv_diagnosic_header',
+			'lpv_diagnostic_header',
 			array(
 				'label'     => __( 'Show PMPro Header Diagnostic', 'pmpro-lpv-customizer' ),
-				'settings'  => 'lpv_diagnosic_header',
+				'settings'  => 'lpv_diagnostic_header',
 				'section'   => 'pmpro_section',
 				'priority'  => 10,
 				// 'type'      => 'ios',
