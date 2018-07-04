@@ -21,7 +21,7 @@ class PMPro_LPV_Customizer {
 	 * @return void
 	 */
 	public static function engage_the_customizer( $pmpro_manager ) {
-		// self::pmpro_panel( $pmpro_manager );
+		self::pmpro_panel( $pmpro_manager );
 		self::pmpro_section( $pmpro_manager );
 	}
 
@@ -66,12 +66,12 @@ class PMPro_LPV_Customizer {
 	 */
 	private static function pmpro_panel( $pmpro_manager ) {
 		$pmpro_manager->add_panel(
-			'pmpro_customizer_panel',
+			'pmpro_lpv_customizer_panel',
 			array(
 				'priority'    => 10,
 				'capability'  => 'edit_theme_options',
 				'description' => 'Wnat to switch pages via javascript',
-				'title'       => __( 'PMPro Admin Panel', 'pmpro-lpv-customizer' ),
+				'title'       => __( 'PMPro LPV Panel', 'pmpro-lpv-customizer' ),
 			)
 		);
 	}
@@ -90,7 +90,7 @@ class PMPro_LPV_Customizer {
 			array(
 				'title'        => 'PMPro Limit Post Views',
 				'priority'     => 9,
-				// 'panel'          => 'pmpro_customizer_panel',
+				'panel'          => 'pmpro_lpv_customizer_panel',
 				'description'  => 'This is a description of this text setting in the PMPro Customizer Controls section',
 			)
 		);

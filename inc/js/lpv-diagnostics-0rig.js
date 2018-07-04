@@ -53,7 +53,9 @@ jQuery(document).ready(function($) {
 		},
 		// dataType: "JSON",
 		success:function( data ) {
-			$('.modal-body').html(data);
+			var obj = JSON.parse(data);
+			var d = new Date(obj.phpexpire);
+			var exp = d.toUTCString();
 
 			elem = $('body');
 			if (elem.hasClass('single')){
@@ -66,7 +68,7 @@ jQuery(document).ready(function($) {
 			}
 			var lpv_array = obj.userlevel + '|' + upcount + '|' + obj.limit;
 			// console.log( data );
-
+			$('.modal-body').html(data);
 			var remaining = obj.limit - upcount;
 			document.cookie="pmpro_lpv_count=" + lpv_array + '; expires=' + exp + ';path=/';
 

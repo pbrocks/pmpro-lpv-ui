@@ -16,8 +16,7 @@ class PMPro_LPV_Init {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'lpv_header_enqueue' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'lpv_admin_enqueue' ) );
 		add_action( 'wp_footer', array( __CLASS__, 'lpv_notification_bar' ) );
-		add_action( 'wp_head', array( __CLASS__, 'pbrx_header_message' ) );
-
+		// add_action( 'wp_head', array( __CLASS__, 'pbrx_header_message' ) );
 		add_filter( 'lpv_open_todo', array( __CLASS__, 'lpv_open_todo_message' ) );
 
 		add_action( 'wp_head', array( __CLASS__, 'pmpro_lpv_modal' ) );
@@ -37,10 +36,10 @@ class PMPro_LPV_Init {
 			__( 'LPV Class', 'pmpro-lpv-ui' ),
 			apply_filters( 'pmpro_edit_member_capability', 'manage_options' ),
 			'pmpro-limitpostviews',
-			array( __CLASS__, 'pmprolpv_settings_page' )
+			array( __CLASS__, 'pmpro_lpv_settings_page' )
 		);
 	}
-	public static function pmprolpv_settings_page() {
+	public static function pmpro_lpv_settings_page() {
 		echo '<h3>' . __FILE__ . '</h3>';
 		echo '<ul>';
 		echo '<li> * Cookie is set on landing on Home, no banner shown.li>';
@@ -62,6 +61,40 @@ class PMPro_LPV_Init {
 	public static function lpv_open_todo_message( $example ) {
 		// Maybe modify $example in some way.
 		return $example;
+	}
+
+	public static function pmpro_lpv_settings() {
+		$lpv['limit'] = get_option( 'pmprolpv_limit_' . $level_id );
+		$lpv['use_js'] = get_option( 'pmprolpv_use_js' );
+		return $lpv;
+	}
+	/**
+	 * [lpv_diagnostics_form description]
+	 *
+	 * @param  [type] $example [description]
+	 * @return [type]          [description]
+	 */
+	public static function lpv_diagnostics_form() {
+		?>
+			<form id="lpv-diagnostics-form">
+			<input type="hidden" name="hidden" value="lpv-diagnostics-test">
+			<?php
+			$cur_usr_ary = get_pmpro_member_array( 1 );
+			$cur_lev = $cur_usr_ary['level_id'];
+			$xyz = ' | Current Level ' . $cur_lev . ' | Limit ' . PMPRO_LPV_LIMIT . ' per ' . PMPRO_LPV_LIMIT_PERIOD;
+			if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
+				$button_value = 'Reset Cookie';
+				// $button_value = 3600 * 24 * 100 . ' seconds';
+				$button = '<input type="hidden" name="token" value="reset">';
+				$stg = ' $_COOKIE(\'pmpro_lpv_count\') SET !! ' . $button;
+			} else {
+				$button_value = 'Set Cookie';
+				$button = '<input type="hidden" name="token" value="set">';
+				$stg = ' $_COOKIE(\'pmpro_lpv_count\') NOT set ?!?!? ' . $button;
+			}
+			?>
+			</form>
+			<?php
 	}
 
 	/**
@@ -98,12 +131,12 @@ class PMPro_LPV_Init {
 			?>
 			</form>
 			<?php
-			$values = pmpro_lpv_cookie_values();
+			// $values = pmpro_lpv_cookie_values();
 			// print_r( $values );
 			$header = '<h3 id="lpv-head">Count <span id="lpv_counter"></span>' . $xyz . ' <br> ' . $stg . '<div id="data-returned">data-returned here</div></h3>';
-			// if ( current_user_can( 'manage_options' ) ) {
-			echo $header;
-			// }
+			if ( current_user_can( 'manage_options' ) ) {
+				echo $header;
+			}
 		}
 	}
 
@@ -133,8 +166,8 @@ class PMPro_LPV_Init {
 			array(
 				'lpv_diagnostics_ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'lpv_diagnostics_nonce' => wp_create_nonce( 'lpv-diagnostics-nonce' ),
-				'lpv_diagnostics_user_level' => pmpro_get_user_level(),
-				'lpv_diagnostics_redirect' => get_pmpro_lpv_redirect(),
+				'lpv_diagnostics_user_level' => self::pmpro_get_user_level(),
+				'lpv_diagnostics_redirect' => self::get_pmpro_lpv_redirect(),
 				'lpv_diagnostics_action'   => get_option( 'lpv_response_radio' ),
 				'lpv_diagnostics_php_expire' => date( 'Y-m-d H:i:s', strtotime( 'today + 1 week' ) ),
 			)
@@ -171,9 +204,41 @@ class PMPro_LPV_Init {
 		$curviews = $limitparts[1];
 		$expires = date( 'Y-m-d', strtotime( '+30 days' ) );
 		$cookiestr .= "$curlev,$curviews";
-		echo json_encode( $ajax_data );
-
+		// echo json_encode( $ajax_data );
+		echo '<pre>';
+		print_r( $ajax_data );
+		echo '</pre>';
 		exit();
+	}
+
+
+	/**
+	 * [pmpro_get_user_level Return the member's level
+	 *
+	 * @return [type] If not a member, level = 0
+	 */
+	public static function pmpro_get_user_level() {
+		global $current_user;
+		if ( ! empty( $current_user->membership_level ) ) {
+			$level_id = $current_user->membership_level->id;
+		} else {
+			$level_id = 0;
+		}
+		return $level_id;
+	}
+
+	/**
+	 * Redirect to  the configured page or the default levels page
+	 */
+	public static function get_pmpro_lpv_redirect() {
+		$page_id = get_option( 'pmprolpv_redirect_page' );
+
+		if ( empty( $page_id ) ) {
+			$redirect_url = pmpro_url( 'levels' );
+		} else {
+			$redirect_url = get_the_permalink( $page_id );
+		}
+		return $redirect_url;
 	}
 	/**
 	 * pmpro_lpv_modal This AJAX is going to run on page load
@@ -183,7 +248,7 @@ class PMPro_LPV_Init {
 	 * @return [type] [description]
 	 */
 	public static function pmpro_lpv_modal() {
-		if ( 'popup' === get_option( 'lpv_response_radio' ) ) {
+		// if ( 'popup' === get_option( 'lpv_response_radio' ) ) {
 			?>
 		<div id="this-modal" class="modal">
 			<!-- Modal content -->
@@ -193,9 +258,9 @@ class PMPro_LPV_Init {
 				</div>
 				<div class="modal-body">
 					<h2>Levels Shortcode below</h2>
+					<!-- <img src="https://placekitten.com/150/200"> 
 					<img src="https://placekitten.com/150/200">
-					<img src="https://placekitten.com/150/200">
-					<img src="https://placekitten.com/150/200">
+					<img src="https://placekitten.com/150/200">-->
 					<p><?php echo do_shortcode( '[pmpro_levels]' ); ?></p>
 					<p>Levels Shortcode above</p>
 				</div>
@@ -205,7 +270,7 @@ class PMPro_LPV_Init {
 			</div>
 		</div>
 		<?php
-		}
+		// }
 	}
 	/**
 	 * [lpv_notification_bar description]
