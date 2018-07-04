@@ -114,8 +114,16 @@ class PMPro_LPV_Settings {
 		$lpv_options = get_option( 'pmpro_lpv_settings' );
 		$lpv_options['lpv_limit_response'] = get_option( 'lpv_response_radio' );
 		?>
-		<label>Radio Footer
-		<input type='radio' name='pmpro_lpv_settings[lpv_limit_response]' <?php checked( $lpv_options['lpv_limit_response'], 'footer' ); ?> value='footer'></label>
+		<style type="text/css">
+			#lpv-setting {
+				display: grid;
+				grid-template-columns: 1fr 2fr;
+				  grid-gap: 1rem;
+			}
+		</style>
+		<div id="lpv-setting"><div id="lvp-input">
+		<input type='radio' name='pmpro_lpv_settings[lpv_limit_response]' <?php checked( $lpv_options['lpv_limit_response'], 'footer' ); ?> value='footer'></label></div><div id="lvp-label">
+		<label>Radio Footer</div></div>
 		<br>
 		<label>Radio Popup
 		<input type='radio' name='pmpro_lpv_settings[lpv_limit_response]' <?php checked( $lpv_options['lpv_limit_response'], 'popup' ); ?> value='popup'></label>
