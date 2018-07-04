@@ -116,9 +116,13 @@ class PMPro_LPV_Settings {
 		?>
 		<style type="text/css">
 			#lpv-setting {
+				width: 44%;
 				display: grid;
-				grid-template-columns: 1fr 2fr;
-				  grid-gap: 1rem;
+				grid-template-columns: 1rem 1fr;
+				grid-gap: 1rem;
+			}
+			#lvp-input {
+				padding: 5px;
 			}
 		</style>
 		<div id="lpv-setting"><div id="lvp-input">
