@@ -68,10 +68,10 @@ class PMPro_LPV_Customizer {
 		$pmpro_manager->add_panel(
 			'pmpro_customizer_panel',
 			array(
-				'priority' => 10,
-				'capability' => 'edit_theme_options',
+				'priority'    => 10,
+				'capability'  => 'edit_theme_options',
 				'description' => 'Wnat to switch pages via javascript',
-				'title' => __( 'PMPro Admin Panel', 'pmpro-lpv-customizer' ),
+				'title'       => __( 'PMPro Admin Panel', 'pmpro-lpv-customizer' ),
 			)
 		);
 	}
@@ -88,15 +88,15 @@ class PMPro_LPV_Customizer {
 		$pmpro_manager->add_section(
 			'pmpro_section',
 			array(
-				'title'          => 'PMPro Controls',
-				'priority'       => 9,
+				'title'        => 'PMPro Limit Post Views',
+				'priority'     => 9,
 				// 'panel'          => 'pmpro_customizer_panel',
-				'description' => 'This is a description of this text setting in the PMPro Customizer Controls section',
+				'description'  => 'This is a description of this text setting in the PMPro Customizer Controls section',
 			)
 		);
 
 		$pmpro_manager->add_setting(
-			'header_diagnostic_toggle',
+			'lpv_diagnosic_header',
 			array(
 				'default'    => 1,
 				'type'       => 'option',
@@ -108,10 +108,10 @@ class PMPro_LPV_Customizer {
 		$pmpro_manager->add_control(
 			// new Soderland_Toggle_Control(
 				// $pmpro_manager,
-			'header_diagnostic_toggle',
+			'lpv_diagnosic_header',
 			array(
 				'label'     => __( 'Show PMPro Header Diagnostic', 'pmpro-lpv-customizer' ),
-				'settings'   => 'header_diagnostic_toggle',
+				'settings'  => 'lpv_diagnosic_header',
 				'section'   => 'pmpro_section',
 				'priority'  => 10,
 				// 'type'      => 'ios',
@@ -126,8 +126,8 @@ class PMPro_LPV_Customizer {
 		$pmpro_manager->add_setting(
 			'lpv_response_radio',
 			array(
-				'default'        => '2',
-				'transport'           => 'refresh',
+				'default'     => '1',
+				'type'        => 'option',
 			)
 		);
 
@@ -140,12 +140,116 @@ class PMPro_LPV_Customizer {
 				'label'       => 'Limit Post View Response',
 				'description' => 'After the limit has been reached, what behavior do you want to see ',
 				'choices'     => array(
-					'1' => 'Footer enlargement',
-					'2' => 'Pop Up',
-					'3' => 'Redirect',
+					'footer'   => 'Footer enlargement',
+					'popup'    => 'Pop Up',
+					'redirect' => 'Redirect',
 				),
 				'priority'    => 11,
 			)
 		);
+
+		if ( 'footer' === get_option( 'lpv_response_radio' ) ) {
+			$pmpro_manager->add_setting(
+				'footer_text_block', array(
+					'default'           => __( 'footer text', 'pmpro-lpv-customizer' ),
+					'sanitize_callback' => 'sanitize_text',
+				)
+			);
+			// Add control
+			$pmpro_manager->add_control(
+				new WP_Customize_Control(
+					$pmpro_manager,
+					'footer_text_block',
+					array(
+						'label'    => __( 'Footer Text', 'pmpro-lpv-customizer' ),
+						'section'  => 'pmpro_section',
+						'settings' => 'footer_text_block',
+						'type'     => 'text',
+						'priority'    => 12,
+					)
+				)
+			);
+		}
+		if ( 'popup' === get_option( 'lpv_response_radio' ) ) {
+			// Add setting
+			$pmpro_manager->add_setting(
+				'modal_header_text', array(
+					'default'           => __( 'Modal header text', 'pmpro-lpv-customizer' ),
+					'sanitize_callback' => 'sanitize_text',
+				)
+			);
+			// Add control
+			$pmpro_manager->add_control(
+				new WP_Customize_Control(
+					$pmpro_manager,
+					'modal_header_text',
+					array(
+						'label'    => __( 'Modal Header Text', 'pmpro-lpv-customizer' ),
+						'section'  => 'pmpro_section',
+						'settings' => 'modal_header_text',
+						'type'     => 'text',
+						'priority'    => 15,
+					)
+				)
+			);
+
+			// Add setting
+			$pmpro_manager->add_setting(
+				'modal_body_text', array(
+					'default'           => __( 'Modal body text', 'pmpro-lpv-customizer' ),
+					'sanitize_callback' => 'sanitize_text',
+				)
+			);
+			// Add control
+			$pmpro_manager->add_control(
+				new WP_Customize_Control(
+					$pmpro_manager,
+					'modal_body_text',
+					array(
+						'label'    => __( 'Modal Body Text', 'pmpro-lpv-customizer' ),
+						'section'  => 'pmpro_section',
+						'settings' => 'modal_body_text',
+						'type'     => 'text',
+						'priority'    => 15,
+					)
+				)
+			);
+
+			// Add setting
+			$pmpro_manager->add_setting(
+				'modal_footer_text', array(
+					'default'           => __( 'Modal default text', 'pmpro-lpv-customizer' ),
+					'sanitize_callback' => 'sanitize_text',
+				)
+			);
+			// Add control
+			$pmpro_manager->add_control(
+				new WP_Customize_Control(
+					$pmpro_manager,
+					'modal_footer_text',
+					array(
+						'label'    => __( 'Modal Footer Text', 'pmpro-lpv-customizer' ),
+						'section'  => 'pmpro_section',
+						'settings' => 'modal_footer_text',
+						'type'     => 'text',
+						'priority'    => 15,
+					)
+				)
+			);
+			// get_option( 'pmprolpv_redirect_page' )
+		}
+
+	}
+
+	/**
+	 * The sanitize_text function adds a new section
+	 * to the Customizer to display the settings and
+	 * controls that we build.
+	 *
+	 * @param  [type] $text [description]
+	 * @return [type]             [description]
+	 */
+	private static function sanitize_text( $text ) {
+			return sanitize_text_field( $text );
 	}
 }

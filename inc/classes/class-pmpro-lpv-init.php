@@ -20,6 +20,7 @@ class PMPro_LPV_Init {
 
 		add_filter( 'lpv_open_todo', array( __CLASS__, 'lpv_open_todo_message' ) );
 
+		add_action( 'wp_head', array( __CLASS__, 'pmpro_lpv_modal' ) );
 		add_action( 'wp_ajax_tie_into_lpv_diagnostics', array( __CLASS__, 'pbrx_header_set_cookie' ) );
 		add_action( 'wp_ajax_nopriv_tie_into_lpv_diagnostics', array( __CLASS__, 'pbrx_header_set_cookie' ) );
 	}
@@ -123,6 +124,8 @@ class PMPro_LPV_Init {
 	public static function lpv_header_enqueue() {
 		wp_register_style( 'lpv-head', plugins_url( 'css/lpv-head.css', dirname( __FILE__ ) ) );
 		wp_enqueue_style( 'lpv-head' );
+		wp_register_style( 'modal-popup', plugins_url( 'css/modal-popup.css', dirname( __FILE__ ) ) );
+		wp_enqueue_style( 'modal-popup' );
 		wp_register_script( 'lpv-diagnostics', plugins_url( '/js/lpv-diagnostics.js', dirname( __FILE__ ) ), array( 'jquery' ), false, false );
 		wp_localize_script(
 			'lpv-diagnostics',
@@ -132,6 +135,7 @@ class PMPro_LPV_Init {
 				'lpv_diagnostics_nonce' => wp_create_nonce( 'lpv-diagnostics-nonce' ),
 				'lpv_diagnostics_user_level' => pmpro_get_user_level(),
 				'lpv_diagnostics_redirect' => get_pmpro_lpv_redirect(),
+				'lpv_diagnostics_action'   => get_option( 'lpv_response_radio' ),
 				'lpv_diagnostics_php_expire' => date( 'Y-m-d H:i:s', strtotime( 'today + 1 week' ) ),
 			)
 		);
@@ -172,6 +176,38 @@ class PMPro_LPV_Init {
 		exit();
 	}
 	/**
+	 * pmpro_lpv_modal This AJAX is going to run on page load
+	 *                  It'll be too late for php to set a cookie, but
+	 *                  we can do so with Javascript
+	 *
+	 * @return [type] [description]
+	 */
+	public static function pmpro_lpv_modal() {
+		if ( 'popup' === get_option( 'lpv_response_radio' ) ) {
+			?>
+		<div id="this-modal" class="modal">
+			<!-- Modal content -->
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2>Modal Header</h2>
+				</div>
+				<div class="modal-body">
+					<h2>Levels Shortcode below</h2>
+					<img src="https://placekitten.com/150/200">
+					<img src="https://placekitten.com/150/200">
+					<img src="https://placekitten.com/150/200">
+					<p><?php echo do_shortcode( '[pmpro_levels]' ); ?></p>
+					<p>Levels Shortcode above</p>
+				</div>
+				<div class="modal-footer">
+					<h3>Modal Footer</h3>
+				</div>
+			</div>
+		</div>
+		<?php
+		}
+	}
+	/**
 	 * [lpv_notification_bar description]
 	 *
 	 * @return [type] [description]
@@ -185,7 +221,7 @@ class PMPro_LPV_Init {
 				?>
 				<div id="lpv-footer" style="z-index:333;">
 			You have <span style="color: #B00000;"> <span id="footer-text"><span id="lpv_count"><img src="<?php echo esc_html( admin_url( '/images/spinner.gif' ) ); ?>" /></span> of <span id="lpv_limit"><img src="<?php echo esc_html( admin_url( '/images/spinner.gif' ) ); ?>" /></span> </span> remaining. 
-			<a href="<?php echo wp_login_url( get_permalink() ); ?>" title="Log in">Log in</a> or <a href="<?php echo pmpro_url( 'levels' ); ?>" title="Subscribe now">Subscribe</a> for unlimited access.</span>
+			<a href="<?php echo wp_login_url( get_permalink() ); ?>" title="Log in">Log in</a> or <span id="footer-break" style="display:none;"><br><br></span><a href="<?php echo pmpro_url( 'levels' ); ?>" title="Subscribe now">Subscribe</a> for unlimited access.</span>
 			</div>
 			<?php
 		}

@@ -15,9 +15,9 @@ jQuery(document).ready(function($) {
 		count = 0;
 		limit = 5;
 	} else {
-		var myarr = thisCookie.split("|");
-		var count = Number(myarr[1]);
-		var limit = myarr[2];
+		var cookieArray = thisCookie.split("|");
+		var count = Number(cookieArray[1]);
+		var limit = cookieArray[2];
 	}
 	if ( isNaN(count) ) {
 		count = 0;
@@ -38,12 +38,13 @@ jQuery(document).ready(function($) {
 			token       : $('input[name=token]').val(),
 			expires     : $('input[name=expires]').val(),
 
-			// Localized stuff
+			// Localized stuff lpv_diagnostics_action
 			userlevel    : lpv_diagnostics_object.lpv_diagnostics_user_level,
 			cookie_values: lpv_diagnostics_object.lpv_diagnostics_cookie_values,
 			limit        : lpv_diagnostics_object.lpv_diagnostics_limit,
 			redirect     : lpv_diagnostics_object.lpv_diagnostics_redirect,
 			phpexpire    : lpv_diagnostics_object.lpv_diagnostics_php_expire,
+			response     : lpv_diagnostics_object.lpv_diagnostics_action,
 
 			// Admin stuff
 			script_name  : 'lpv-diagnostics.js',
@@ -79,10 +80,12 @@ jQuery(document).ready(function($) {
 				$('#lpv_count').html(obj.limit);
 				$('#lpv_limit').html(obj.limit);
 			}
-			if ( 1 == remaining ) {
-				$('#lpv-footer').css( 'padding','11rem 0');
-				// $('#footer-text').html('<h2>FFS</h2>');
-
+			if ( 1 == remaining && 'footer' == obj.response ) {
+				$('#lpv-footer').css({'padding':'10rem 0','font-size':'3rem',}).append('response ' + obj.response);
+				$('#footer-break').css({'display':'block'}).delay(1500);
+			}
+			if ( 1 == remaining && 'popup' == obj.response ) {
+				$('.modal').css({'display':'block'});
 			}
 			 // else {
 				// $('#lpv-footer').css( 'display','none'); 
