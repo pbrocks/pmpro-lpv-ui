@@ -6,6 +6,7 @@
  */
 
 require_once( plugin_dir_path( __FILE__ ) . 'inc/admin.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'inc/admin2.php' );
 
 // include( 'inc/pmpro-lpv-detritus.php' );
 include( 'inc/classes/class-pmpro-lpv-init.php' );

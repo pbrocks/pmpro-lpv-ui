@@ -63,10 +63,11 @@ function pmprolpv_admin_init() {
 		// Register limits settings fields.
 		$levels = pmpro_getAllLevels( true, true );
 		$levels[0] = new stdClass();
+		$levels[0]->id = 0;
 		$levels[0]->name = __( 'Non-members', 'pmpro' );
 		asort( $levels );
 		foreach ( $levels as $id => $level ) {
-			$title = $level->name;
+			$title = $level->name . ' ( Level ' . $level->id . ' )';
 			add_settings_field(
 				'pmprolpv_limit_' . $id,
 				$title,
