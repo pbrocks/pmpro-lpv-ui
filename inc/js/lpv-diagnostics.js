@@ -74,7 +74,7 @@ jQuery(document).ready(function($) {
 			var remaining = obj.limit - upcount;
 			document.cookie="pmpro_lpv_count=" + lpv_array + '; expires=' + exp + ';path=/';
 
-			$('#data-returned').html('Need to calculate expiration<br>Set cookie at 0, separately increment<br>Cookie Set ' + "pmpro_lpv_count=" + upcount + '; expires=' + exp );
+			$('#some-other-paste').html('Need to calculate expiration<br>Set cookie at 0, separately increment<br>Cookie Set ' + "pmpro_lpv_count=" + upcount + '; expires=' + exp );
 			// if ( upcount == 0 ) {
 			if ( upcount > 0 ) {
 				$('#lpv_count').html(remaining);

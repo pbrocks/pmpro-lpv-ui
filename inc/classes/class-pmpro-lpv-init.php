@@ -18,8 +18,11 @@ class PMPro_LPV_Init {
 		add_action( 'wp_footer', array( __CLASS__, 'lpv_notification_bar' ) );
 		add_action( 'wp_head', array( __CLASS__, 'lpv_diagnostics_form' ) );
 		add_filter( 'lpv_open_todo', array( __CLASS__, 'lpv_open_todo_message' ) );
-
 		add_action( 'wp_head', array( __CLASS__, 'pmpro_lpv_modal' ) );
+
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'clear_button_enqueue' ) );
+		add_shortcode( 'clear-button', array( __CLASS__, 'clear_button_shortcode' ) );
+		add_action( 'wp_ajax_two_responses_action', array( __CLASS__, 'two_responses_function' ) );
 		add_action( 'wp_ajax_tie_into_lpv_diagnostics', array( __CLASS__, 'pbrx_header_set_cookie' ) );
 		add_action( 'wp_ajax_nopriv_tie_into_lpv_diagnostics', array( __CLASS__, 'pbrx_header_set_cookie' ) );
 	}
@@ -75,13 +78,15 @@ class PMPro_LPV_Init {
 	 * @return [type]          [description]
 	 */
 	public static function lpv_diagnostics_form() {
+		$limitt = 'need limit';
+		$periodd = 'need period';
 		?>
 			<form id="lpv-diagnostics-form">
 			<input type="hidden" name="hidden" value="lpv-diagnostics-test">
 			<?php
 			$cur_usr_ary = self::get_pmpro_member_array( 1 );
 			$cur_lev = $cur_usr_ary['level_id'];
-			$xyz = ' | Current Level ' . $cur_lev . ' | Limit ' . PMPRO_LPV_LIMIT . ' per ' . PMPRO_LPV_LIMIT_PERIOD;
+			$xyz = ' | Current Level ' . $cur_lev . ' | Limit ' . $limitt . ' per ' . $periodd;
 			if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
 				$button_value = 'Reset Cookie';
 				// $button_value = 3600 * 24 * 100 . ' seconds';
@@ -106,6 +111,44 @@ class PMPro_LPV_Init {
 		wp_enqueue_style( 'lpv-admin', plugins_url( '../css/lpv-admin.css', __FILE__ ) );
 	}
 
+
+	/**
+	 * [clear_button_enqueue description]
+	 *
+	 * @return [type] [description]
+	 */
+	public static function clear_button_enqueue() {
+		wp_register_script( 'two-responses', plugins_url( '/js/two-responses.js', dirname( __FILE__ ) ), array( 'jquery' ), false, false );
+		wp_localize_script(
+			'two-responses',
+			'two_responses_object',
+			array(
+				'two_responses_ajaxurl' => admin_url( 'admin-ajax.php' ),
+				'two_responses_nonce'   => wp_create_nonce( 'two-responses-nonce' ),
+				'two_responses_user_level' => self::pmpro_get_user_level(),
+				'two_responses_redirect' => self::get_pmpro_lpv_redirect(),
+				'two_responses_response'   => self::get_pmpro_lpv_limit_response(),
+				'two_responses_php_expire' => self::get_pmpro_lpv_period(),
+			)
+		);
+	}
+	public static function clear_button_shortcode() {
+		wp_enqueue_script( 'two-responses' );
+		?>
+		<form id="two-responses-form">
+			<input type="hidden" id="two-responses" name="two-responses" class="two-responses" value="two-responses" />
+			<input type="submit" id="two-responses-submit" name="two-responses-submit" class="two-responses-submit" value="LPV Cookies" />
+		</form>
+		<?php
+
+	}
+	public static function two_responses_function() {
+		$variables = $_POST;
+		echo '<pre>AJAX $variables ';
+		print_r( $variables );
+		echo '</pre>';
+		exit();
+	}
 
 	/**
 	 * [lpv_header_enqueue description]
@@ -277,7 +320,7 @@ class PMPro_LPV_Init {
 				?>
 				<div id="lpv-footer" style="z-index:333;">
 			You have <span style="color: #B00000;"> <span id="footer-text"><span id="lpv_count"><img src="<?php echo esc_html( admin_url( '/images/spinner.gif' ) ); ?>" /></span> of <span id="lpv_limit"><img src="<?php echo esc_html( admin_url( '/images/spinner.gif' ) ); ?>" /></span> </span> remaining. 
-			<a href="<?php echo wp_login_url( get_permalink() ); ?>" title="Log in">Log in</a> or <span id="footer-break" style="display:none;"><br><br></span><a href="<?php echo pmpro_url( 'levels' ); ?>" title="Subscribe now">Subscribe</a> for unlimited access.</span>
+			<a href="<?php echo wp_login_url( get_permalink() ); ?>" title="Log in">Log in</a> or <span id="footer-break" style="display:none;"><br><br></span><a href="<?php echo pmpro_url( 'levels' ); ?>" title="Subscribe now">Subscribe</a> for unlimited access.</span><?php echo do_shortcode( '[clear-button]' ); ?>
 			</div>
 			<?php
 		} else {
