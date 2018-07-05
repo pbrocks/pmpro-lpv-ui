@@ -53,6 +53,7 @@ jQuery(document).ready(function($) {
 		},
 		// dataType: "JSON",
 		success:function( data ) {
+			// $('.modal-body').html(data).css({'color':'salmon'});
 			var obj = JSON.parse(data);
 			var d = new Date(obj.phpexpire);
 			var exp = d.toUTCString();
