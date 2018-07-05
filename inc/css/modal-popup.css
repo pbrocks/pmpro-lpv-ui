@@ -51,6 +51,7 @@ section {
 .modal-body {
 	padding: 2rem;
 	text-align: center;
+	color: salmon;
 }
 
 .modal-footer {

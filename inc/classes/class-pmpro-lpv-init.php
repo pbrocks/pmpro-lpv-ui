@@ -12,6 +12,7 @@ class PMPro_LPV_Init {
 	 */
 	public static function init() {
 		// Adding a subment to hook into other PMPro menus
+		add_action( 'wp_head', array( __CLASS__, 'lpv_header_admin_head' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'lpv_admin_menu' ) );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'lpv_header_enqueue' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'lpv_admin_enqueue' ) );
@@ -26,6 +27,22 @@ class PMPro_LPV_Init {
 		add_action( 'wp_ajax_tie_into_lpv_diagnostics', array( __CLASS__, 'pbrx_header_set_cookie' ) );
 		add_action( 'wp_ajax_nopriv_tie_into_lpv_diagnostics', array( __CLASS__, 'pbrx_header_set_cookie' ) );
 	}
+	public static function lpv_header_admin_head() {
+		?>
+		<style type="text/css">
+			#lpv-foter {
+				background: rgba(250,128,114,.8);
+			}
+			#foter-text {
+				text-align: center;
+			}
+		</style>
+			<div id="lpv-foter" style="z-index:333;">
+				<span id="foter-text"><h2>Nada</h2></span>
+			</div>
+		<?php
+	}
+
 	/**
 	 * Customizer manager demo
 	 *
@@ -53,6 +70,11 @@ class PMPro_LPV_Init {
 		echo '<li> * * NumberFormatter is a problem - removing for now</li>';
 		echo '<li> * ' . apply_filters( 'lpv_open_todo', 'lpv_open_todo filter here' ) . '</li>';
 		echo '</ul>';
+		echo '<pre>pmpro_lpv_settings ';
+		print_r( self::pmpro_lpv_settings( 1 ) );
+		echo 'get_pmpro_lpv_limit() ';
+		print_r( self::get_pmpro_lpv_limit() );
+		echo '</pre>';
 	}
 
 	/**
@@ -66,7 +88,7 @@ class PMPro_LPV_Init {
 		return $example;
 	}
 
-	public static function pmpro_lpv_settings() {
+	public static function pmpro_lpv_settings( $level_id ) {
 		$lpv['limit'] = get_option( 'pmprolpv_limit_' . $level_id );
 		$lpv['use_js'] = get_option( 'pmprolpv_use_js' );
 		return $lpv;
@@ -126,7 +148,8 @@ class PMPro_LPV_Init {
 				'two_responses_ajaxurl' => admin_url( 'admin-ajax.php' ),
 				'two_responses_nonce'   => wp_create_nonce( 'two-responses-nonce' ),
 				'two_responses_user_level' => self::pmpro_get_user_level(),
-				'two_responses_redirect' => self::get_pmpro_lpv_redirect(),
+				'two_responses_limit'      => self::get_pmpro_lpv_limit(),
+				'two_responses_redirect'   => self::get_pmpro_lpv_redirect(),
 				'two_responses_response'   => self::get_pmpro_lpv_limit_response(),
 				'two_responses_php_expire' => self::get_pmpro_lpv_period(),
 			)
@@ -165,10 +188,11 @@ class PMPro_LPV_Init {
 			'lpv-diagnostics',
 			'lpv_diagnostics_object',
 			array(
-				'lpv_diagnostics_ajaxurl' => admin_url( 'admin-ajax.php' ),
-				'lpv_diagnostics_nonce' => wp_create_nonce( 'lpv-diagnostics-nonce' ),
+				'lpv_diagnostics_ajaxurl'    => admin_url( 'admin-ajax.php' ),
+				'lpv_diagnostics_nonce'      => wp_create_nonce( 'lpv-diagnostics-nonce' ),
 				'lpv_diagnostics_user_level' => self::pmpro_get_user_level(),
-				'lpv_diagnostics_redirect' => self::get_pmpro_lpv_redirect(),
+				'lpv_diagnostics_lpv_limit'  => self::get_pmpro_lpv_limit(),
+				'lpv_diagnostics_redirect'   => self::get_pmpro_lpv_redirect(),
 				'lpv_diagnostics_response'   => self::get_pmpro_lpv_limit_response(),
 				'lpv_diagnostics_php_expire' => self::get_pmpro_lpv_period(),
 			)
@@ -199,6 +223,16 @@ class PMPro_LPV_Init {
 			$level_id = 0;
 		}
 		return $level_id;
+	}
+
+	/**
+	 * Redirect to the configured page or the default levels page
+	 */
+	public static function get_pmpro_lpv_limit() {
+		$level_id = self::pmpro_get_user_level();
+		$limit = get_option( 'pmprolpv_limit_' . $level_id );
+		$limit['level_id'] = $level_id;
+		return $limit;
 	}
 
 	/**
@@ -250,22 +284,21 @@ class PMPro_LPV_Init {
 		if ( ! empty( $_COOKIE['pmpro_lpv_count'] ) ) {
 			global $current_user;
 			$parts = explode( ';', $_COOKIE['pmpro_lpv_count'] );
-			$limitparts = explode( ',', $parts[0] );
-			// Get the level limit for the current user.
-			if ( defined( 'PMPRO_LPV_LIMIT' ) && PMPRO_LPV_LIMIT > 0 ) {
-				$limit = intval( PMPRO_LPV_LIMIT );
-			}
+			$splitparts = explode( '|', $parts[0] );
 			$ajax_data['parts'] = $parts;
-			$ajax_data['limitparts'] = $limitparts;
-			$ajax_data['level'] = $limitparts[0];
-			$ajax_data['view'] = 13;
-			$ajax_data['limit'] = $limit;
+			$ajax_data['splitparts'] = $splitparts;
+			$ajax_data['cookie_level'] = $splitparts[0];
+			$ajax_data['cookie_views'] = $splitparts[1];
+			$ajax_data['cookie_limit'] = $splitparts[2];
 		}
 
-		$curlev = 4;
-		$curviews = $limitparts[1];
-		$expires = date( 'Y-m-d', strtotime( '+30 days' ) );
-		$cookiestr .= "$curlev,$curviews";
+		$curlev = $ajax_data['userlevel'];
+		$curlev = $ajax_data['limit']['level_id'];
+		$curviews = $splitparts[1];
+		$ajax_data['lpv_limit'] = $ajax_data['limit']['views'];
+		$ajax_data['lpv_period'] = $ajax_data['limit']['period'];
+		$expires = date( 'Y-m-d', strtotime( '+1' . $ajax_data['lpv_period'] ) );
+		$cookiestr = "$curlev,$curviews";
 		echo json_encode( $ajax_data );
 		// echo '<pre>';
 		// print_r( $ajax_data );

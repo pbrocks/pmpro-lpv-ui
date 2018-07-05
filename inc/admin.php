@@ -103,12 +103,11 @@ function pmprolpv_admin_init() {
 		// Register JavaScript settings field.
 		add_settings_field(
 			'pmprolpv_use_js',
-			'Use JavaScript redirection',
+			'Use JavaScript redirection => We won\'t need this',
 			'pmprolpv_settings_field_use_js',
 			'pmpro-limitpostviews',
 			'pmprolpv_redirection'
 		);
-
 		// Register JavaScript setting.
 		register_setting(
 			'pmpro-limitpostviews',
