@@ -236,7 +236,6 @@ class PMPro_LPV_Customizer {
 					)
 				)
 			);
-			// get_option( 'pmprolpv_redirect_page' )
 		}
 
 	}
