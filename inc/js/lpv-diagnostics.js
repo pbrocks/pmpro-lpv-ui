@@ -84,20 +84,20 @@ jQuery(document).ready(function($) {
 				$('#lpv_count').html(obj.lpv_limit);
 				$('#lpv_limit').html(obj.lpv_limit);
 			}
-			if ( 1 == remaining && 'footer' == obj.response ) {
+			if ( 1 == Number(remaining) && 'footer' == obj.response ) {
 				$('#lpv-footer').css({'padding':'10rem 0','font-size':'3rem',}).append('response ' + obj.response);
 				$('#footer-break').css({'display':'block'}).delay(1500);
 			}
-			if ( 1 == remaining && 'popup' == obj.response ) {
+			if ( 1 == Number(remaining) && 'popup' == obj.response ) {
 				$('#lpv-modal').css({'display':'block'});
 				$('#foter-text').html('Yo modal = LPV love ' + remaining + ' remaining');
+			}
+			if ( 1 == Number(remaining) && 'redirect' == obj.response ) {
+				$('#foter-text').html( 'We\'ll use "window.location = obj.redirect;" to send to ' + obj.redirect ); 
 			} else  {
-				$('#foter-text').html('no modal LPV we love ' + remaining + ' remaining ' + ' popup == ' +  obj.response );
+				$('#foter-text').html('no modal LPV we love ' + remaining + ' remaining ' + ' response == ' +  obj.response );
 			} 
-			 // else {
-				// $('#lpv-footer').css( 'display','none'); 
-			// }
-			// window.location = obj.redirect;
+			
 		},
 		error: function( jqXHR, textStatus, errorThrown ){
 			console.log( errorThrown );
