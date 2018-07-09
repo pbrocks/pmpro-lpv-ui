@@ -2,8 +2,11 @@ section {
 	padding: 2rem 4rem;
 }
 /* The Modal (background) */
-.modal {
-	display: none; /* Hidden by default */
+#lpv-modal {
+	display: none;
+	/*display: block;*/
+}
+.popup-modal {
 	position: fixed; /* Stay in place */
 	z-index: 4; /* Sit on top */
 	padding-top: 100px; /* Location of the box */

@@ -29,7 +29,7 @@ class PMPro_LPV_Init {
 	}
 	public static function lpv_diagnostics_form1() {
 		if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
-			$return = 'Yep!!';
+			$return = 'Yep, $_COOKIE[\'pmpro_lpv_count\'] is set!!';
 		} else {
 			$return = 'WTF';
 		}
@@ -45,7 +45,7 @@ class PMPro_LPV_Init {
 		</style>
 		<div id="lpv-foter" style="z-index:333;">
 			<?php if ( get_option( 'lpv_diagnostic_header' ) ) { ?>
-				<span id="foter-text">MMMmmmmmkkay<br><?php echo self::lpv_diagnostics_form1(); ?></span>
+				<span id="foter-text">MMMmmmmmkkay</span><br><?php echo self::lpv_diagnostics_form1(); ?>
 			<?php } else { ?>
 				<span id="foter-text">Nada<br></span>
 			<?php } ?>
@@ -320,7 +320,7 @@ class PMPro_LPV_Init {
 	public static function pmpro_lpv_modal() {
 		// if ( 'popup' === get_option( 'lpv_response_radio' ) ) {
 		?>
-		<div id="this-modal" class="modal">
+		<div id="lpv-modal" class="popup-modal">
 		<!-- Modal content -->
 		<div class="modal-content">
 			<div class="modal-header">

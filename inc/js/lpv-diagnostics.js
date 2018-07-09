@@ -44,7 +44,7 @@ jQuery(document).ready(function($) {
 			limit        : lpv_diagnostics_object.lpv_diagnostics_lpv_limit,
 			redirect     : lpv_diagnostics_object.lpv_diagnostics_redirect,
 			phpexpire    : lpv_diagnostics_object.lpv_diagnostics_php_expire,
-			response     : lpv_diagnostics_object.lpv_diagnostics_action,
+			response     : lpv_diagnostics_object.lpv_diagnostics_response,
 
 			// Admin stuff
 			script_name  : 'lpv-diagnostics.js',
@@ -70,6 +70,7 @@ jQuery(document).ready(function($) {
 			}
 			var lpv_array = obj.userlevel + '|' + upcount + '|' + obj.lpv_limit;
 			// console.log( data );
+			// $('#foter-text').html('we love LPV');
 
 			var remaining = obj.lpv_limit - upcount;
 			document.cookie="pmpro_lpv_count=" + lpv_array + '; expires=' + exp + ';path=/';
@@ -88,8 +89,11 @@ jQuery(document).ready(function($) {
 				$('#footer-break').css({'display':'block'}).delay(1500);
 			}
 			if ( 1 == remaining && 'popup' == obj.response ) {
-				$('.modal').css({'display':'block'});
-			}
+				$('#lpv-modal').css({'display':'block'});
+				$('#foter-text').html('Yo modal = LPV love ' + remaining + ' remaining');
+			} else  {
+				$('#foter-text').html('no modal LPV we love ' + remaining + ' remaining ' + ' popup == ' +  obj.response );
+			} 
 			 // else {
 				// $('#lpv-footer').css( 'display','none'); 
 			// }
