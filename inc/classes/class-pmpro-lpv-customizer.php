@@ -49,11 +49,11 @@ class PMPro_LPV_Customizer {
 	public static function pmpro_lpv_dashboard_page() {
 		echo '<div class="wrap">';
 		echo '<h2>' . __FUNCTION__ . '</h2>';
-		$user_id = 1;
-		$array = PMPro_Helpers\inc\classes\PMPro_Helper_Functions::get_pmpro_member_array( $user_id );
+		$level_id = 1;
+		$array = array();
 		echo '<pre> get_pmpro_member_array ';
-		echo '<h2>' . $array['level_id'] . '</h2>';
-		print_r( $array );
+		// echo '<h2>' . $array[ $level_id ] . '</h2>';
+		// print_r( $array );
 		echo '</pre>';
 		echo '</div>';
 	}
