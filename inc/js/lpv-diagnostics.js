@@ -53,8 +53,6 @@ jQuery(document).ready(function($) {
 		},
 		// dataType: "JSON",
 		success:function( data ) {
-			// $('.modal-body').html(data).css({'text-align':'left'});
-
 			var obj = JSON.parse(data);
 			var d = new Date(obj.phpexpire);
 			var exp = d.toUTCString();
@@ -94,10 +92,6 @@ jQuery(document).ready(function($) {
 			} else  {
 				$('#foter-text').html('no modal LPV we love ' + remaining + ' remaining ' + ' popup == ' +  obj.response );
 			} 
-			 // else {
-				// $('#lpv-footer').css( 'display','none'); 
-			// }
-			// window.location = obj.redirect;
 		},
 		error: function( jqXHR, textStatus, errorThrown ){
 			console.log( errorThrown );
