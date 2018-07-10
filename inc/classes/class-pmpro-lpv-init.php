@@ -188,13 +188,13 @@ class PMPro_LPV_Init {
 	 * @return [type] [description]
 	 */
 	public static function lpv_header_enqueue() {
-		if ( pmpro_has_membership_access ) {
-			return;
-		}
 		wp_register_style( 'lpv-head', plugins_url( 'css/lpv-head.css', dirname( __FILE__ ) ) );
 		wp_enqueue_style( 'lpv-head' );
 		wp_register_style( 'modal-popup', plugins_url( 'css/modal-popup.css', dirname( __FILE__ ) ) );
 		wp_enqueue_style( 'modal-popup' );
+		if ( pmpro_has_membership_access() ) {
+			return;
+		}
 		wp_register_script( 'lpv-diagnostics', plugins_url( '/js/lpv-diagnostics.js', dirname( __FILE__ ) ), array( 'jquery' ), false, false );
 		wp_localize_script(
 			'lpv-diagnostics',
