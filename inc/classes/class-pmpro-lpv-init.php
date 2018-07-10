@@ -188,6 +188,9 @@ class PMPro_LPV_Init {
 	 * @return [type] [description]
 	 */
 	public static function lpv_header_enqueue() {
+		if ( pmpro_has_membership_access ) {
+			return;
+		}
 		wp_register_style( 'lpv-head', plugins_url( 'css/lpv-head.css', dirname( __FILE__ ) ) );
 		wp_enqueue_style( 'lpv-head' );
 		wp_register_style( 'modal-popup', plugins_url( 'css/modal-popup.css', dirname( __FILE__ ) ) );
@@ -197,8 +200,6 @@ class PMPro_LPV_Init {
 			'lpv-diagnostics',
 			'lpv_diagnostics_object',
 			array(
-				'lpv_diagnostics_ajaxurl'    => admin_url( 'admin-ajax.php' ),
-				'lpv_diagnostics_nonce'      => wp_create_nonce( 'lpv-diagnostics-nonce' ),
 				'lpv_diagnostics_user_level' => self::pmpro_get_user_level(),
 				'lpv_diagnostics_lpv_limit'  => self::get_pmpro_lpv_limit(),
 				'lpv_diagnostics_redirect'   => self::get_pmpro_lpv_redirect(),
@@ -328,7 +329,7 @@ class PMPro_LPV_Init {
 			</div>
 			<div class="modal-body">
 				<h2>Levels Shortcode below</h2>
-				 <img src="https://placekitten.com/150/200"> 
+				 <img src="https://placekitten.com/150/200">
 				<img src="https://placekitten.com/150/200">
 				<img src="https://placekitten.com/150/200">
 				<p><?php echo do_shortcode( '[pmpro_levels]' ); ?></p>
@@ -355,7 +356,7 @@ class PMPro_LPV_Init {
 			// $article_s = sprintf( _n( '%s free article', '%s free articles', $formatted, 'paid-memberships-pro' ), number_format_i18n( $formatted ) );
 			?>
 			<div id="lpv-footer" style="z-index:333;">
-			You have <span style="color: #B00000;"> <span id="footer-text"><span id="lpv_count"><img src="<?php echo esc_html( admin_url( '/images/spinner.gif' ) ); ?>" /></span> of <span id="lpv_limit"><img src="<?php echo esc_html( admin_url( '/images/spinner.gif' ) ); ?>" /></span> </span> remaining. 
+			You have <span style="color: #B00000;"> <span id="footer-text"><span id="lpv_count"><img src="<?php echo esc_html( admin_url( '/images/spinner.gif' ) ); ?>" /></span> of <span id="lpv_limit"><img src="<?php echo esc_html( admin_url( '/images/spinner.gif' ) ); ?>" /></span> </span> remaining.
 			<a href="<?php echo wp_login_url( get_permalink() ); ?>" title="Log in">Log in</a> or <span id="footer-break" style="display:none;"><br><br></span><a href="<?php echo pmpro_url( 'levels' ); ?>" title="Subscribe now">Subscribe</a> for unlimited access.</span><?php echo do_shortcode( '[clear-button]' ); ?>
 			</div>
 			<?php
