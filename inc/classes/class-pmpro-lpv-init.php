@@ -7,6 +7,10 @@ class PMPro_LPV_Init {
 
 	/**
 	 * init     Using static functions for our classes -- seems to be slightly more performant
+	 * <<<<<<< HEAD
+		if ( pmpro_has_membership_access() ) {
+			return;
+		}
 	 *
 	 * @return [type] [description]
 	 */
@@ -17,17 +21,14 @@ class PMPro_LPV_Init {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'lpv_header_enqueue' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'lpv_admin_enqueue' ) );
 		add_action( 'wp_footer', array( __CLASS__, 'lpv_notification_bar' ) );
-		add_action( 'wp_head', array( __CLASS__, 'lpv_diagnostics_form' ) );
+		add_action( 'wp_head', array( __CLASS__, 'lpv_cookie_form' ) );
 		add_filter( 'lpv_open_todo', array( __CLASS__, 'lpv_open_todo_message' ) );
-		add_action( 'wp_head', array( __CLASS__, 'pmpro_lpv_modal' ) );
+		add_action( 'wp_head', array( __CLASS__, 'pmpro_lpv_modal' ),15 );
 
-		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'clear_button_enqueue' ) );
-		add_shortcode( 'clear-button', array( __CLASS__, 'clear_button_shortcode' ) );
-		add_action( 'wp_ajax_two_responses_action', array( __CLASS__, 'two_responses_function' ) );
-		add_action( 'wp_ajax_tie_into_lpv_diagnostics', array( __CLASS__, 'lpv_header_set_cookie' ) );
-		add_action( 'wp_ajax_nopriv_tie_into_lpv_diagnostics', array( __CLASS__, 'lpv_header_set_cookie' ) );
+		add_action( 'wp_ajax_tie_into_lpv_cookie', array( __CLASS__, 'lpv_header_set_cookie' ) );
+		add_action( 'wp_ajax_nopriv_tie_into_lpv_cookie', array( __CLASS__, 'lpv_header_set_cookie' ) );
 	}
-	public static function lpv_diagnostics_form1() {
+	public static function lpv_cookie_check() {
 		if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
 			$return = 'Yep, $_COOKIE[\'pmpro_lpv_count\'] is set!!';
 		} else {
@@ -37,19 +38,18 @@ class PMPro_LPV_Init {
 	}
 	public static function lpv_header_admin_head() {
 		?>
-		<style type="text/css">
-		#lpv-foter {
-			background: rgba(250,128,114,.8);
-			text-align: center;
-		}
-		</style>
-		<div id="lpv-foter" style="z-index:333;">
-			<?php if ( get_option( 'lpv_diagnostic_header' ) ) { ?>
-				<span id="foter-text">MMMmmmmmkkay</span><br><?php echo self::lpv_diagnostics_form1(); ?>
-			<?php } else { ?>
-				<span id="foter-text">Nada<br></span>
-			<?php } ?>
+		<?php if ( get_option( 'lpv_diagnostic_header' ) ) { ?>
+			<style type="text/css">
+			#lpv-header {
+				background: rgba(250,128,114,.8);
+				text-align: center;
+			}
+			</style>
+			<div id="lpv-header" style="z-index:333;">
+				<span id="header-text">MMMmmmmmkkay</span><br>
+				<?php echo self::lpv_cookie_check(); ?>
 			</div>
+			<?php } ?>
 		<?php
 	}
 
@@ -104,17 +104,17 @@ class PMPro_LPV_Init {
 		return $lpv;
 	}
 	/**
-	 * [lpv_diagnostics_form description]
+	 * [lpv_cookie_form description]
 	 *
 	 * @param  [type] $example [description]
 	 * @return [type]          [description]
 	 */
-	public static function lpv_diagnostics_form() {
+	public static function lpv_cookie_form() {
 		$limitt = 'need limit';
 		$periodd = 'need period';
 		?>
-		<form id="lpv-diagnostics-form">
-		<input type="hidden" name="hidden" value="lpv-diagnostics-test">
+		<form id="lpv-cookie-form">
+		<input type="hidden" name="hidden" value="lpv-cookie-test">
 		<?php
 		$cur_usr_ary = self::get_pmpro_member_array( 1 );
 		$cur_lev = $cur_usr_ary['level_id'];
@@ -144,45 +144,6 @@ class PMPro_LPV_Init {
 	}
 
 	/**
-	 * [clear_button_enqueue description]
-	 *
-	 * @return [type] [description]
-	 */
-	public static function clear_button_enqueue() {
-		wp_register_script( 'two-responses', plugins_url( '/js/two-responses.js', dirname( __FILE__ ) ), array( 'jquery' ), false, false );
-		wp_localize_script(
-			'two-responses',
-			'two_responses_object',
-			array(
-				'two_responses_ajaxurl' => admin_url( 'admin-ajax.php' ),
-				'two_responses_nonce'   => wp_create_nonce( 'two-responses-nonce' ),
-				'two_responses_user_level' => self::pmpro_get_user_level(),
-				'two_responses_limit'      => self::get_pmpro_lpv_limit(),
-				'two_responses_redirect'   => self::get_pmpro_lpv_redirect(),
-				'two_responses_response'   => self::get_pmpro_lpv_limit_response(),
-				'two_responses_php_expire' => self::get_pmpro_lpv_period(),
-			)
-		);
-	}
-	public static function clear_button_shortcode() {
-		wp_enqueue_script( 'two-responses' );
-		?>
-		<form id="two-responses-form">
-		<input type="hidden" id="two-responses" name="two-responses" class="two-responses" value="two-responses" />
-		<input type="submit" id="two-responses-submit" name="two-responses-submit" class="two-responses-submit" value="LPV Cookies" />
-		</form>
-		<?php
-
-	}
-	public static function two_responses_function() {
-		$variables = $_POST;
-		echo '<pre>AJAX $variables ';
-		print_r( $variables );
-		echo '</pre>';
-		exit();
-	}
-
-	/**
 	 * [lpv_header_enqueue description]
 	 *
 	 * @return [type] [description]
@@ -192,22 +153,24 @@ class PMPro_LPV_Init {
 		wp_enqueue_style( 'lpv-head' );
 		wp_register_style( 'modal-popup', plugins_url( 'css/modal-popup.css', dirname( __FILE__ ) ) );
 		wp_enqueue_style( 'modal-popup' );
-		if ( pmpro_has_membership_access() ) {
-			return;
-		}
-		wp_register_script( 'lpv-diagnostics', plugins_url( '/js/lpv-diagnostics.js', dirname( __FILE__ ) ), array( 'jquery' ), false, false );
+
+		wp_register_script( 'lpv-cookie', plugins_url( '/js/lpv-set-cookie.js', dirname( __FILE__ ) ), array( 'jquery' ), false, false );
+
 		wp_localize_script(
-			'lpv-diagnostics',
-			'lpv_diagnostics_object',
+			'lpv-cookie',
+			'lpv_cookie_object',
 			array(
-				'lpv_diagnostics_user_level' => self::pmpro_get_user_level(),
-				'lpv_diagnostics_lpv_limit'  => self::get_pmpro_lpv_limit(),
-				'lpv_diagnostics_redirect'   => self::get_pmpro_lpv_redirect(),
-				'lpv_diagnostics_response'   => self::get_pmpro_lpv_limit_response(),
-				'lpv_diagnostics_php_expire' => self::get_pmpro_lpv_period(),
+
+				'lpv_cookie_ajaxurl'    => admin_url( 'admin-ajax.php' ),
+				'lpv_cookie_nonce'      => wp_create_nonce( 'lpv-cookie-nonce' ),
+				'lpv_cookie_user_level' => self::pmpro_get_user_level(),
+				'lpv_cookie_lpv_limit'  => self::get_pmpro_lpv_limit(),
+				'lpv_cookie_redirect'   => self::get_pmpro_lpv_redirect(),
+				'lpv_cookie_response'   => self::get_pmpro_lpv_limit_response(),
+				'lpv_cookie_php_expire' => self::get_pmpro_lpv_period(),
 			)
 		);
-		wp_enqueue_script( 'lpv-diagnostics' );
+		wp_enqueue_script( 'lpv-cookie' );
 	}
 	public static function get_pmpro_member_array( $user_id ) {
 		$user_object = new WP_User( $user_id );
@@ -329,9 +292,14 @@ class PMPro_LPV_Init {
 			</div>
 			<div class="modal-body">
 				<h2>Levels Shortcode below</h2>
+<<<<<<< HEAD
 				 <img src="https://placekitten.com/150/200">
 				<img src="https://placekitten.com/150/200">
+=======
+<!-- 				 <img src="https://placekitten.com/150/200"> 
+>>>>>>> dev-master
 				<img src="https://placekitten.com/150/200">
+				<img src="https://placekitten.com/150/200"> -->
 				<p><?php echo do_shortcode( '[pmpro_levels]' ); ?></p>
 				<p>Levels Shortcode above</p>
 			</div>
@@ -357,13 +325,7 @@ class PMPro_LPV_Init {
 			?>
 			<div id="lpv-footer" style="z-index:333;">
 			You have <span style="color: #B00000;"> <span id="footer-text"><span id="lpv_count"><img src="<?php echo esc_html( admin_url( '/images/spinner.gif' ) ); ?>" /></span> of <span id="lpv_limit"><img src="<?php echo esc_html( admin_url( '/images/spinner.gif' ) ); ?>" /></span> </span> remaining.
-			<a href="<?php echo wp_login_url( get_permalink() ); ?>" title="Log in">Log in</a> or <span id="footer-break" style="display:none;"><br><br></span><a href="<?php echo pmpro_url( 'levels' ); ?>" title="Subscribe now">Subscribe</a> for unlimited access.</span><?php echo do_shortcode( '[clear-button]' ); ?>
-			</div>
-			<?php
-		} else {
-			?>
-			<div id="lpv-footer" style="z-index:333;">
-				<span id="footer-text"><h2>Nada</h2></span>
+			<a href="<?php echo wp_login_url( get_permalink() ); ?>" title="Log in">Log in</a> or <span id="footer-break" style="display:none;"><br><br></span><a href="<?php echo pmpro_url( 'levels' ); ?>" title="Subscribe now">Subscribe</a> for unlimited access.</span>
 			</div>
 			<?php
 		}
