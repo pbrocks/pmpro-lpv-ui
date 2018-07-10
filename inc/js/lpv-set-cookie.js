@@ -22,34 +22,30 @@ jQuery(document).ready(function($) {
 	if ( isNaN(count) ) {
 		count = 0;
 	}
-	// if ( count == 0 ) {
-		// $('#lpv-footer').css( 'display','none'); 
-	// } else {
-		// $('#lpv-footer').css( 'display','block'); 
-	// } 
+
 	$.ajax({
 		type: "POST",
-		url: lpv_diagnostics_object.lpv_diagnostics_ajaxurl,
+		url: lpv_cookie_object.lpv_cookie_ajaxurl,
 		data: {
 			// Variables defined from form 
-			action      : 'tie_into_lpv_diagnostics',
-			serialize   : $('#lpv-diagnostics-form').serialize(),
+			action      : 'tie_into_lpv_cookie',
+			serialize   : $('#lpv-cookie-form').serialize(),
 			hidden      : $('input[name=hidden]').val(),
 			token       : $('input[name=token]').val(),
 			expires     : $('input[name=expires]').val(),
 
-			// Localized stuff lpv_diagnostics_action
-			userlevel    : lpv_diagnostics_object.lpv_diagnostics_user_level,
-			cookie_values: lpv_diagnostics_object.lpv_diagnostics_cookie_values,
-			limit        : lpv_diagnostics_object.lpv_diagnostics_lpv_limit,
-			redirect     : lpv_diagnostics_object.lpv_diagnostics_redirect,
-			phpexpire    : lpv_diagnostics_object.lpv_diagnostics_php_expire,
-			response     : lpv_diagnostics_object.lpv_diagnostics_response,
+			// Localized stuff lpv_cookie_action
+			userlevel    : lpv_cookie_object.lpv_cookie_user_level,
+			cookie_values: lpv_cookie_object.lpv_cookie_cookie_values,
+			limit        : lpv_cookie_object.lpv_cookie_lpv_limit,
+			redirect     : lpv_cookie_object.lpv_cookie_redirect,
+			phpexpire    : lpv_cookie_object.lpv_cookie_php_expire,
+			response     : lpv_cookie_object.lpv_cookie_response,
 
 			// Admin stuff
-			script_name  : 'lpv-diagnostics.js',
-			ajaxurl      : lpv_diagnostics_object.lpv_diagnostics_ajaxurl,
-			nonce        : lpv_diagnostics_object.lpv_diagnostics_nonce,
+			script_name  : 'lpv-set-cookie.js',
+			ajaxurl      : lpv_cookie_object.lpv_cookie_ajaxurl,
+			nonce        : lpv_cookie_object.lpv_cookie_nonce,
 		},
 		// dataType: "JSON",
 		success:function( data ) {
@@ -69,14 +65,11 @@ jQuery(document).ready(function($) {
 				var upcount = 0;
 			}
 			var lpv_array = obj.userlevel + '|' + upcount + '|' + obj.lpv_limit;
-			// console.log( data );
-			// $('#foter-text').html('we love LPV');
 
 			var remaining = obj.lpv_limit - upcount;
 			document.cookie="pmpro_lpv_count=" + lpv_array + '; expires=' + exp + ';path=/';
 
 			$('#some-other-paste').html('Need to calculate expiration<br>Set cookie at 0, separately increment<br>Cookie Set ' + "pmpro_lpv_count=" + upcount + '; expires=' + exp );
-			// if ( upcount == 0 ) {
 			if ( upcount > 0 ) {
 				$('#lpv_count').html(remaining);
 				$('#lpv_limit').html(obj.lpv_limit);
@@ -90,12 +83,12 @@ jQuery(document).ready(function($) {
 			}
 			if ( 1 == Number(remaining) && 'popup' == obj.response ) {
 				$('#lpv-modal').css({'display':'block'});
-				$('#foter-text').html('Yo modal = LPV love ' + remaining + ' remaining');
+				$('#foter-text').html('Yo modal = LPV | love ' + remaining + ' remaining');
 			}
 			if ( 1 == Number(remaining) && 'redirect' == obj.response ) {
 				$('#foter-text').html( 'We\'ll use "window.location = obj.redirect;" to send to ' + obj.redirect ); 
 			} else  {
-				$('#foter-text').html('no modal LPV we love ' + remaining + ' remaining ' + ' response == ' +  obj.response );
+				$('#foter-text').html('no modal LPV | we love ' + remaining + ' remaining ' + '| response == ' +  obj.response );
 			} 
 			
 		},
@@ -103,5 +96,4 @@ jQuery(document).ready(function($) {
 			console.log( errorThrown );
 		}
 	});
-	// });
 });
