@@ -83,12 +83,12 @@ jQuery(document).ready(function($) {
 			}
 			if ( 1 == Number(remaining) && 'popup' == obj.response ) {
 				$('#lpv-modal').css({'display':'block'});
-				$('#foter-text').html('Yo modal = LPV | love ' + remaining + ' remaining');
+				$('#header-text').html('Yo modal = LPV | love ' + remaining + ' remaining');
 			}
 			if ( 1 == Number(remaining) && 'redirect' == obj.response ) {
-				$('#foter-text').html( 'We\'ll use "window.location = obj.redirect;" to send to ' + obj.redirect ); 
+				$('#header-text').html( 'We\'ll use "window.location = obj.redirect;" to send to ' + obj.redirect ); 
 			} else  {
-				$('#foter-text').html('no modal LPV | we love ' + remaining + ' remaining ' + '| response == ' +  obj.response );
+				$('#header-text').html('no modal LPV | we love ' + remaining + ' remaining ' + '| response == ' +  obj.response );
 			} 
 			
 		},

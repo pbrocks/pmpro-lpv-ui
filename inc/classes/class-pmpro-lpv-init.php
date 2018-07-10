@@ -39,13 +39,13 @@ class PMPro_LPV_Init {
 		?>
 		<?php if ( get_option( 'lpv_diagnostic_header' ) ) { ?>
 			<style type="text/css">
-			#lpv-foter {
+			#lpv-header {
 				background: rgba(250,128,114,.8);
 				text-align: center;
 			}
 			</style>
-			<div id="lpv-foter" style="z-index:333;">
-				<span id="foter-text">MMMmmmmmkkay</span><br>
+			<div id="lpv-header" style="z-index:333;">
+				<span id="header-text">MMMmmmmmkkay</span><br>
 				<?php echo self::lpv_cookie_check(); ?>
 			</div>
 			<?php } ?>
