@@ -22,29 +22,6 @@ jQuery(document).ready(function($) {
 	 if ( isNaN(count) ) {
 	 	count = 0;
 	 }
-	 <<<<<<< HEAD:inc/js/lpv-diagnostics.js
-
-	 var obj = {
-	 	'phpexpire' : lpv_diagnostics_object.lpv_diagnostics_php_expire,
-	 	'lpv_limit' : lpv_diagnostics_object.lpv_diagnostics_lpv_limit.views,
-	 	'userlevel' : lpv_diagnostics_object.lpv_diagnostics_user_level,
-	 	'redirect'  : lpv_diagnostics_object.lpv_diagnostics_redirect,
-	 	'response'  : lpv_diagnostics_object.lpv_diagnostics_response,
-	 }
-	 var d = new Date(obj.phpexpire);
-	 var exp = d.toUTCString();
-
-	 elem = $('body');
-	 if (elem.hasClass('single')){
-	 	var upcount = Number(count) + Number(1);
-	 } else {
-	 	var upcount = count;
-	 }
-	 if ( obj.lpv_limit <= upcount ) {
-	 	var upcount = 0;
-	 }
-	 var lpv_array = obj.userlevel + '|' + upcount + '|' + obj.lpv_limit;
-	 =======
 
 	 $.ajax({
 	 	type: "POST",
