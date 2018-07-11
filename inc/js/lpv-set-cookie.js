@@ -62,7 +62,7 @@ jQuery(document).ready(function($) {
 				var upcount = count;
 			}
 			if ( obj.lpv_limit == upcount ) {
-				var upcount = 0;
+				// var upcount = 0;
 			}
 			var lpv_array = obj.userlevel + '|' + upcount + '|' + obj.lpv_limit;
 
@@ -70,29 +70,29 @@ jQuery(document).ready(function($) {
 			var remaining = obj.lpv_limit - upcount;
 			document.cookie="pmpro_lpv_count=" + lpv_array + '; expires=' + exp + ';path=/';
 
-
-			$('#some-other-paste').html('Need to calculate expiration<br>Set cookie at 0, separately increment<br>Cookie Set ' + "pmpro_lpv_count=" + upcount + '; expires=' + exp );
-			if ( upcount > 0 ) {
+			if ( Number(remaining) < 0 ) {
+				$('#lpv_count').html('0');
+				$('#lpv_limit').html(obj.lpv_limit);
+				if ( 0 >= Number(remaining) && 'footer' == obj.response ) {
+					$('#lpv-footer').css({'padding':'8rem 0'});
+					$('.pmpro_level.medium-12').css({'padding':'2px','background':'rgba(22,22,22,.69)'});
+					$('#lpv-footer-levels').css({'display':'block'}).delay(1500);
+					$('#lpv-footer-display').css({'display':'none'}).delay(1500);
+				}
+				if ( 0 >= Number(remaining) && 'popup' == obj.response ) {
+					$('#lpv-modal').css({'display':'block'});
+					$('#header-text').html('Yo modal = LPV | love ' + remaining + ' remaining');
+				}
+				if ( 0 >= Number(remaining) && 'redirect' == obj.response ) {
+					$('#header-text').html( 'We\'ll use "window.location = obj.redirect;" to send to ' + obj.redirect ); 
+					window.location = obj.redirect;
+				} else  {
+					$('#header-text').html('no modal LPV | we love ' + remaining + ' remaining ' + '| response == ' +  obj.response );
+				} 
+			} else {
 				$('#lpv_count').html(remaining);
 				$('#lpv_limit').html(obj.lpv_limit);
-			}  else {
-				$('#lpv_count').html(obj.lpv_limit);
-				$('#lpv_limit').html(obj.lpv_limit);
-			}
-			if ( 1 == Number(remaining) && 'footer' == obj.response ) {
-				$('#lpv-footer').css({'padding':'10rem 0','font-size':'3rem',}).append('response ' + obj.response);
-				$('#footer-break').css({'display':'block'}).delay(1500);
-			}
-			if ( 1 == Number(remaining) && 'popup' == obj.response ) {
-				$('#lpv-modal').css({'display':'block'});
-				$('#header-text').html('Yo modal = LPV | love ' + remaining + ' remaining');
-			}
-			if ( 1 == Number(remaining) && 'redirect' == obj.response ) {
-				$('#header-text').html( 'We\'ll use "window.location = obj.redirect;" to send to ' + obj.redirect ); 
-			} else  {
-				$('#header-text').html('no modal LPV | we love ' + remaining + ' remaining ' + '| response == ' +  obj.response );
 			} 
-			
 		},
 		error: function( jqXHR, textStatus, errorThrown ){
 			console.log( errorThrown );

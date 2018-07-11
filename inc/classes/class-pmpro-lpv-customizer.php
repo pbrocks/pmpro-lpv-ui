@@ -21,7 +21,7 @@ class PMPro_LPV_Customizer {
 	 * @return void
 	 */
 	public static function engage_the_customizer( $pmpro_manager ) {
-		self::pmpro_panel( $pmpro_manager );
+		// self::pmpro_panel( $pmpro_manager );
 		self::pmpro_section( $pmpro_manager );
 	}
 
@@ -51,9 +51,10 @@ class PMPro_LPV_Customizer {
 		echo '<h2>' . __FUNCTION__ . '</h2>';
 		$level_id = 1;
 		$array = array();
+		$array = get_theme_mods();
 		echo '<pre> get_pmpro_member_array ';
 		// echo '<h2>' . $array[ $level_id ] . '</h2>';
-		// print_r( $array );
+		print_r( $array );
 		echo '</pre>';
 		echo '</div>';
 	}
@@ -90,7 +91,7 @@ class PMPro_LPV_Customizer {
 			array(
 				'title'        => 'PMPro Limit Post Views',
 				'priority'     => 9,
-				'panel'          => 'pmpro_lpv_customizer_panel',
+				// 'panel'          => 'pmpro_lpv_customizer_panel',
 				'description'  => 'This is a description of this text setting in the PMPro Customizer Controls section',
 			)
 		);
