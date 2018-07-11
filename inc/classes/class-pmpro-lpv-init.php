@@ -84,8 +84,8 @@ class PMPro_LPV_Init {
 		echo '<li> * ' . apply_filters( 'lpv_open_todo', 'lpv_open_todo filter here' ) . '</li>';
 		echo '</ul>';
 		echo '<pre>pmpro_lpv_settings ';
-		$array = ( in_array( 'pmpro_level', $shortcode_tags ) ? '<h4>pmpro_level exists</h4>' : '<h4>pmpro_level not available</h4>');
-		print_r( $array );
+		// $array = ( in_array( 'pmpro_level', $shortcode_tags ) ? '<h4>pmpro_level exists</h4>' : '<h4>pmpro_level not available</h4>');
+		// print_r( $array );
 		$array = ( in_array( 'pmpro_advanced_levels', $shortcode_tags ) ? '<h4>pmpro_advanced_levels exists</h4>' : '<h4>pmpro_advanced_levels not available</h4>');
 		print_r( $array );
 		print_r( $shortcode_tags );
@@ -266,13 +266,9 @@ class PMPro_LPV_Init {
 			$ajax_data['cookie_views'] = $splitparts[1];
 			$ajax_data['cookie_limit'] = $splitparts[2];
 		}
-		$curlev = $ajax_data['userlevel'];
-		$curlev = $ajax_data['limit']['level_id'];
-		$curviews = $splitparts[1];
 		$ajax_data['lpv_limit'] = $ajax_data['limit']['views'];
 		$ajax_data['lpv_period'] = $ajax_data['limit']['period'];
 		$expires = date( 'Y-m-d', strtotime( '+1' . $ajax_data['lpv_period'] ) );
-		$cookiestr = "$curlev,$curviews";
 		echo json_encode( $ajax_data );
 		exit();
 	}

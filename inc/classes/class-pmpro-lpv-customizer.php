@@ -141,9 +141,9 @@ class PMPro_LPV_Customizer {
 				'label'       => 'Limit Post View Response',
 				'description' => 'After the limit has been reached, what behavior do you want to see ',
 				'choices'     => array(
-					'footer'   => 'Footer enlargement',
-					'popup'    => 'Pop Up',
-					'redirect' => 'Redirect',
+					'footer'   => __( 'Footer enlargement', 'pmpro-lpv-customizer' ),
+					'popup'    => __( 'Pop Up', 'pmpro-lpv-customizer' ),
+					'redirect' => __( 'Redirect', 'pmpro-lpv-customizer' ),
 				),
 				'priority'    => 11,
 			)
