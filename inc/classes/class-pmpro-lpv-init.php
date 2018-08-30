@@ -23,7 +23,7 @@ class PMPro_LPV_Init {
 		add_action( 'wp_footer', array( __CLASS__, 'lpv_notification_bar' ) );
 		add_action( 'wp_head', array( __CLASS__, 'lpv_cookie_form' ) );
 		add_filter( 'lpv_open_todo', array( __CLASS__, 'lpv_open_todo_message' ) );
-		add_action( 'wp_head', array( __CLASS__, 'pmpro_lpv_modal' ),15 );
+		add_action( 'wp_head', array( __CLASS__, 'pmpro_lpv_modal' ), 15 );
 
 		add_action( 'wp_ajax_tie_into_lpv_cookie', array( __CLASS__, 'lpv_header_set_cookie' ) );
 		add_action( 'wp_ajax_nopriv_tie_into_lpv_cookie', array( __CLASS__, 'lpv_header_set_cookie' ) );
@@ -86,7 +86,7 @@ class PMPro_LPV_Init {
 		echo '<pre>pmpro_lpv_settings ';
 		// $array = ( in_array( 'pmpro_level', $shortcode_tags ) ? '<h4>pmpro_level exists</h4>' : '<h4>pmpro_level not available</h4>');
 		// print_r( $array );
-		$array = ( in_array( 'pmpro_advanced_levels', $shortcode_tags ) ? '<h4>pmpro_advanced_levels exists</h4>' : '<h4>pmpro_advanced_levels not available</h4>');
+		$array = ( in_array( 'pmpro_advanced_levels', $shortcode_tags ) ? '<h4>pmpro_advanced_levels exists</h4>' : '<h4>pmpro_advanced_levels not available</h4>' );
 		print_r( $array );
 		print_r( $shortcode_tags );
 		// print_r( self::pmpro_lpv_settings( 1 ) );
@@ -121,12 +121,13 @@ class PMPro_LPV_Init {
 		$limitt = 'need limit';
 		$periodd = 'need period';
 		?>
+		<div style="background: aliceblue;padding: 2rem;text-align: center;width: 100%">
 		<form id="lpv-cookie-form">
 		<input type="hidden" name="hidden" value="lpv-cookie-test">
 		<?php
 		$cur_usr_ary = self::get_pmpro_member_array( 1 );
 		$cur_lev = $cur_usr_ary['level_id'];
-		$xyz = ' | Current Level ' . $cur_lev . ' | Limit ' . $limitt . ' per ' . $periodd;
+		echo '<div id="foter-text"> | Current Level ' . $cur_lev . ' | Limit ' . $limitt . ' per ' . $periodd . '</div>';
 		if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
 			$button_value = 'Reset Cookie';
 			// $button_value = 3600 * 24 * 100 . ' seconds';
@@ -138,7 +139,7 @@ class PMPro_LPV_Init {
 			$stg = ' $_COOKIE(\'pmpro_lpv_count\') NOT set ?!?!? ' . $button;
 		}
 			?>
-			</form>
+			</form></div>
 			<?php
 	}
 
