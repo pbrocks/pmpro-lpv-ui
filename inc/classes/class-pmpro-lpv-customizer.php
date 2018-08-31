@@ -9,9 +9,6 @@ class PMPro_LPV_Customizer {
 	public static function init() {
 		add_action( 'customize_register', array( __CLASS__, 'engage_the_customizer' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'pmpro_lpv_dashboard_menu' ) );
-		// add_action( 'wp_enqueue_scripts', array( __CLASS__, 'customizer_enqueue' ) );
-		// add_action( 'admin_enqueue_scripts', array( __CLASS__, 'customizer_enqueue' ) );
-		// add_action( 'customize_controls_init', array( __CLASS__, 'set_customizer_preview_url' ) );
 	}
 
 	/**
@@ -22,7 +19,7 @@ class PMPro_LPV_Customizer {
 	 */
 	public static function engage_the_customizer( $pmpro_manager ) {
 		// self::pmpro_panel( $pmpro_manager );
-		self::pmpro_section( $pmpro_manager );
+		self::pmpro_lpv_section( $pmpro_manager );
 	}
 
 	/**
@@ -78,20 +75,20 @@ class PMPro_LPV_Customizer {
 	}
 
 	/**
-	 * The pmpro_section function adds a new section
+	 * The pmpro_lpv_section function adds a new section
 	 * to the Customizer to display the settings and
 	 * controls that we build.
 	 *
 	 * @param  [type] $pmpro_manager [description]
 	 * @return [type]             [description]
 	 */
-	private static function pmpro_section( $pmpro_manager ) {
+	private static function pmpro_lpv_section( $pmpro_manager ) {
 		$pmpro_manager->add_section(
-			'pmpro_section',
+			'pmpro_lpv_section',
 			array(
 				'title'        => 'PMPro Limit Post Views',
 				'priority'     => 9,
-				// 'panel'          => 'pmpro_lpv_customizer_panel',
+				'panel'          => 'pmpro_lpv_customizer_panel',
 				'description'  => 'This is a description of this text setting in the PMPro Customizer Controls section',
 			)
 		);
@@ -105,20 +102,20 @@ class PMPro_LPV_Customizer {
 			)
 		);
 
-		// include plugin_dir_path( __FILE__ ) . 'class-soderland-toggle-control.php';
+		include plugin_dir_path( __FILE__ ) . 'class-soderland-toggle-control.php';
 		$pmpro_manager->add_control(
-			// new Soderland_Toggle_Control(
-				// $pmpro_manager,
-			'lpv_diagnostic_header',
-			array(
-				'label'     => __( 'Show PMPro Header Diagnostic', 'pmpro-lpv-customizer' ),
-				'settings'  => 'lpv_diagnostic_header',
-				'section'   => 'pmpro_section',
-				'priority'  => 10,
-				// 'type'      => 'ios',
-				'type'      => 'checkbox',
+			new Soderland_Toggle_Control(
+				$pmpro_manager,
+				'lpv_diagnostic_header',
+				array(
+					'label'     => __( 'Show PMPro Header Diagnostic', 'pmpro-lpv-customizer' ),
+					'settings'  => 'lpv_diagnostic_header',
+					'section'   => 'pmpro_lpv_section',
+					'priority'  => 10,
+					'type'      => 'ios',
+				// 'type'      => 'checkbox',
+				)
 			)
-			// )
 		);
 
 		/**
@@ -135,7 +132,7 @@ class PMPro_LPV_Customizer {
 		$pmpro_manager->add_control(
 			'lpv_response_radio',
 			array(
-				'section'     => 'pmpro_section',
+				'section'     => 'pmpro_lpv_section',
 				'type'        => 'radio',
 				'settings'    => 'lpv_response_radio',
 				'label'       => 'Limit Post View Response',
@@ -163,7 +160,7 @@ class PMPro_LPV_Customizer {
 					'footer_text_block',
 					array(
 						'label'    => __( 'Footer Text', 'pmpro-lpv-customizer' ),
-						'section'  => 'pmpro_section',
+						'section'  => 'pmpro_lpv_section',
 						'settings' => 'footer_text_block',
 						'type'     => 'text',
 						'priority'    => 12,
@@ -186,7 +183,7 @@ class PMPro_LPV_Customizer {
 					'modal_header_text',
 					array(
 						'label'    => __( 'Modal Header Text', 'pmpro-lpv-customizer' ),
-						'section'  => 'pmpro_section',
+						'section'  => 'pmpro_lpv_section',
 						'settings' => 'modal_header_text',
 						'type'     => 'text',
 						'priority'    => 15,
@@ -208,7 +205,7 @@ class PMPro_LPV_Customizer {
 					'modal_body_text',
 					array(
 						'label'    => __( 'Modal Body Text', 'pmpro-lpv-customizer' ),
-						'section'  => 'pmpro_section',
+						'section'  => 'pmpro_lpv_section',
 						'settings' => 'modal_body_text',
 						'type'     => 'text',
 						'priority'    => 15,
@@ -216,27 +213,6 @@ class PMPro_LPV_Customizer {
 				)
 			);
 
-			// Add setting
-			$pmpro_manager->add_setting(
-				'modal_footer_text', array(
-					'default'           => __( 'Modal default text', 'pmpro-lpv-customizer' ),
-					'sanitize_callback' => 'sanitize_text',
-				)
-			);
-			// Add control
-			$pmpro_manager->add_control(
-				new WP_Customize_Control(
-					$pmpro_manager,
-					'modal_footer_text',
-					array(
-						'label'    => __( 'Modal Footer Text', 'pmpro-lpv-customizer' ),
-						'section'  => 'pmpro_section',
-						'settings' => 'modal_footer_text',
-						'type'     => 'text',
-						'priority'    => 15,
-					)
-				)
-			);
 		}
 
 	}
