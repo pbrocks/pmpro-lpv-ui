@@ -10,7 +10,7 @@ jQuery(document).ready(function($) {
 		var parts = value.split("; " + name + "=");
 		if (parts.length == 2) return parts.pop().split(";").shift();
 	};
-	var thisCookie = getCookie('pmpro_lpv_count');
+	var thisCookie = getCookie('pmpro_lpv_ct');
 	if (thisCookie == null) {
 		count = 0;
 		limit = 5;
@@ -45,9 +45,9 @@ jQuery(document).ready(function($) {
 	var lpv_array = obj.userlevel + '|' + upcount + '|' + obj.lpv_limit;
 
 	var remaining = obj.lpv_limit - upcount;
-	document.cookie="pmpro_lpv_count=" + lpv_array + '; expires=' + exp + ';path=/';
+	document.cookie="pmpro_lpv_ct=" + lpv_array + '; expires=' + exp + ';path=/';
 
-	$('#some-other-paste').html('Need to calculate expiration<br>Set cookie at 0, separately increment<br>Cookie Set ' + "pmpro_lpv_count=" + upcount + '; expires=' + exp );
+	$('#some-other-paste').html('Need to calculate expiration<br>Set cookie at 0, separately increment<br>Cookie Set ' + "pmpro_lpv_ct=" + upcount + '; expires=' + exp );
 	// if ( upcount == 0 ) {
 	if ( upcount > 0 ) {
 		$('#lpv_count').html(remaining);
