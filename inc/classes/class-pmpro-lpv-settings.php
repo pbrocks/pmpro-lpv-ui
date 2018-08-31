@@ -29,7 +29,7 @@ class PMPro_LPV_Settings {
 		foreach ( $levels as $id => $level ) {
 			$title = $level->name . ' ( Level ' . $level->id . ' )';
 			add_settings_field(
-				'lpv_limit_id_' . $id,
+				'level_' . $level->id . '_views',
 				$title,
 				array( __CLASS__, 'lpv_limit_select_render' ),
 				'pmpro_lpv_settings',
@@ -37,48 +37,20 @@ class PMPro_LPV_Settings {
 				$id
 			);
 
-			register_setting(
-				'pmpro_lpv_settings',
-				'lpv_limit_id_' . $id,
-				'pmprolpv_sanitize_limit'
-			);
+			// register_setting(
+			// 'pmpro_lpv_settings',
+			// 'lpv_limit_id_' . $id,
+			// 'pmprolpv_sanitize_limit'
+			// );
 		}
 		add_settings_field(
 			'select_field_0',
-			__( 'Describe the dropdown select in this field', 'pmpro-lpv-settings' ),
-			array( __CLASS__, 'select_field_0_render' ),
+			__( 'Post limit action', 'pmpro-lpv-settings' ),
+			array( __CLASS__, 'post_limit_action_render' ),
 			'pmpro_lpv_settings',
 			'pmpro_lpv_section'
 		);
 
-		add_settings_field(
-			'text_field_0',
-			__( 'Describe the text field in this field', 'pmpro-lpv-settings' ),
-			array( __CLASS__, 'text_field_0_render' ),
-			'pmpro_lpv_settings',
-			'pmpro_lpv_section'
-		);
-		// add_settings_field(
-		// 'checkbox_field_0',
-		// __( 'Describe the checkbox in this field', 'pmpro-lpv-settings' ),
-		// array( __CLASS__, 'checkbox_field_0_render' ),
-		// 'pmpro_lpv_settings',
-		// 'pmpro_lpv_section'
-		// );
-		add_settings_field(
-			'textarea_field_a',
-			__( 'Describe the textarea in this field', 'pmpro-lpv-settings' ),
-			array( __CLASS__, 'textarea_field_0_render' ),
-			'pmpro_lpv_settings',
-			'pmpro_lpv_section'
-		);
-		// add_settings_field(
-		// 'radio_field_0',
-		// __( 'Describe the radio button select in this field', 'pmpro-lpv-settings' ),
-		// array( __CLASS__, 'radio_field_0_render' ),
-		// 'pmpro_lpv_settings',
-		// 'pmpro_lpv_section'
-		// );
 	}
 
 	public static function print_all_pmpro_lpv_levels() {
@@ -99,24 +71,22 @@ class PMPro_LPV_Settings {
 	}
 
 	public static function lpv_limit_select_render( $level_id ) {
-		// $options = get_option( 'pmpro_lpv_settings' );
-		// $level_id = PMPro_LPV_Init::pmpro_get_user_level();
-		$limit = get_option( 'lpv_limit_id_' . $level_id );
-	?>
+		$limit = get_option( 'pmpro_lpv_settings' );
+		?>
 	<input size="2" type="text" id="level_<?php echo $level_id; ?>_views"
-		   name="lpv_limit_id_<?php echo $level_id; ?>[views]" value="<?php echo $limit['views']; ?>">
-	<?php _e( ' views per ', 'pmprolpv' ); ?>
-	<select name="lpv_limit_id_<?php echo $level_id; ?>[period]" id="level_<?php echo $level_id; ?>_period">
+		   name="pmpro_lpv_settings[level_<?php echo $level_id; ?>_views]" value="<?php echo $limit[ 'level_' . $level_id . '_views' ]; ?>">
+		<?php _e( ' views per ', 'pmprolpv' ); ?>
+	<select name="pmpro_lpv_settings[level_<?php echo $level_id; ?>_period]" id="level_<?php echo $level_id; ?>_period" >
 		<option
-			value="hour" <?php selected( $limit['period'], 'hour' ); ?>><?php _e( 'Hour', 'pmprolpv' ); ?></option>
+			value="hour" <?php selected( $limit[ 'level_' . $level_id . '_period' ], 'hour' ); ?>><?php _e( 'Hour', 'pmprolpv' ); ?></option>
 		<option
-			value="day" <?php selected( $limit['period'], 'day' ); ?>><?php _e( 'Day', 'pmprolpv' ); ?></option>
+			value="day" <?php selected( $limit[ 'level_' . $level_id . '_period' ], 'day' ); ?>><?php _e( 'Day', 'pmprolpv' ); ?></option>
 		<option
-			value="week" <?php selected( $limit['period'], 'week' ); ?>><?php _e( 'Week', 'pmprolpv' ); ?></option>
+			value="week" <?php selected( $limit[ 'level_' . $level_id . '_period' ], 'week' ); ?>><?php _e( 'Week', 'pmprolpv' ); ?></option>
 		<option
-			value="month" <?php selected( $limit['period'], 'month' ); ?>><?php _e( 'Month', 'pmprolpv' ); ?></option>
+			value="month" <?php selected( $limit[ 'level_' . $level_id . '_period' ], 'month' ); ?>><?php _e( 'Month', 'pmprolpv' ); ?></option>
 	</select>
-	<?php
+		<?php
 	}
 
 	public static function select_field_0_render() {
@@ -129,7 +99,7 @@ class PMPro_LPV_Settings {
 		<option value='4' <?php selected( $options['select_field_0'], 4 ); ?>>Option 4</option>
 		</select>
 
-	<?php
+		<?php
 
 	}
 
@@ -152,21 +122,22 @@ class PMPro_LPV_Settings {
 	public static function textarea_field_0_render() {
 		$options = get_option( 'pmpro_lpv_settings' );
 		?>
-		<textarea cols='40' rows='5' name='pmpro_lpv_settings[textarea_field_a]'> 
-		<?php echo $options['textarea_field_a']; ?>
-	 </textarea>
+		<textarea cols='40' rows='5' name='pmpro_lpv_settings[textarea_field_a]'><?php echo $options['textarea_field_a']; ?></textarea>
 		<?php
 
 	}
 
-	public static function radio_field_0_render() {
+	public static function post_limit_action_render() {
 		$options = get_option( 'pmpro_lpv_settings' );
 		?>
-		<label>Radio 1
-		<input type='radio' name='pmpro_lpv_settings[radio_field_0]' <?php checked( $options['radio_field_0'], 1 ); ?> value='1'></label>
+		<label>
+		<input type='radio' name='pmpro_lpv_settings[post_limit_action]' <?php checked( $options['post_limit_action'], 'redirect' ); ?> value='redirect'> Redirect</label>
 		<br>
-		<label>Radio 2
-		<input type='radio' name='pmpro_lpv_settings[radio_field_0]' <?php checked( $options['radio_field_0'], 2 ); ?> value='2'></label>
+		<label>
+		<input type='radio' name='pmpro_lpv_settings[post_limit_action]' <?php checked( $options['post_limit_action'], 'footer' ); ?> value='footer'> Enlarge Footer</label>
+		<br>
+		<label>
+		<input type='radio' name='pmpro_lpv_settings[post_limit_action]' <?php checked( $options['post_limit_action'], 2 ); ?> value='2'> Radio 2</label>
 		<?php
 
 	}
@@ -180,8 +151,8 @@ class PMPro_LPV_Settings {
 	public static function lpv_options_page() {
 		?>
 		<div style="wrap">
+			<h2>PMPro LPV Settings title found in: <?php echo __FUNCTION__; ?> function</h2>
 		<form action='options.php' method='post'>
-			<h2>PMPro LPV Settings title found in: <?php echo  __FUNCTION__; ?> function</h2>
 			<?php
 				settings_fields( 'pmpro_lpv_settings' );
 				do_settings_sections( 'pmpro_lpv_settings' );
@@ -197,13 +168,6 @@ class PMPro_LPV_Settings {
 				?>
 			</div>
 		<?php
-			$lpv_options = get_option( 'pmpro_lpv_settings' );
-			echo '<pre>';
-			print_r( $lpv_options );
-			echo '</pre>';
-			echo '<pre>';
-			print_r( $levels );
-			echo '</pre>';
 		echo '</div>';
 	}
 

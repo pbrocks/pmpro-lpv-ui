@@ -8,3 +8,11 @@
 #lpv-admin-head-inner {
 	color: red;
 }
+#lpv-post-stuff {
+    padding: 1rem;
+    background: aliceblue;
+}
+p.description {
+	font-size: 1rem;
+	padding: 1rem;
+}
