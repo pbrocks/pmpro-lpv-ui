@@ -92,7 +92,7 @@ class PMPro_LPV_Settings {
 		<input type='radio' name='pmpro_lpv_settings[post_limit_action]' <?php checked( $options['post_limit_action'], 'footer' ); ?> value='footer'> Enlarge Footer</label>
 		<br>
 		<label>
-		<input type='radio' name='pmpro_lpv_settings[post_limit_action]' <?php checked( $options['post_limit_action'], 2 ); ?> value='2'> Radio 2</label>
+		<input type='radio' name='pmpro_lpv_settings[post_limit_action]' <?php checked( $options['post_limit_action'], 'modal' ); ?> value='modal'> Modal</label>
 		<?php
 	}
 
