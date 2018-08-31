@@ -56,13 +56,16 @@ jQuery(document).ready(function($) {
 			var exp = d.toUTCString();
 
 			elem = $('body');
+			if ( Number(count) >= obj.lpv_limit ) {
+				alert('should not continue');
+			}
 			if (elem.hasClass('single')){
-				var upcount = Number(count) + Number(1);
+				var upcount = Number(count) - Number(1);
 			} else {
 				var upcount = count;
 			}
 			if ( obj.lpv_limit == upcount ) {
-				// var upcount = 0;
+				var upcount = 0;
 			}
 			var lpv_array = obj.userlevel + '|' + upcount + '|' + obj.lpv_limit;
 
@@ -70,8 +73,11 @@ jQuery(document).ready(function($) {
 			var remaining = obj.lpv_limit - upcount;
 			document.cookie="pmpro_lpv_ct=" + lpv_array + '; expires=' + exp + ';path=/';
 
-			if ( Number(remaining) < 0 ) {
+			if ( Number(remaining) <= 0 ) {
 				$('#lpv_count').html('0');
+				$('#userlevel').html('userlevel=' + obj.userlevel);
+				$('#upcount').html('upcount=' + upcount);
+				$('#lpvlimit').html('lpvlimit=' + obj.lpv_limit);
 				$('#lpv_limit').html(obj.lpv_limit);
 				if ( 0 >= Number(remaining) && 'footer' == obj.response ) {
 					$('#lpv-footer').css({'padding':'8rem 0'});
@@ -87,7 +93,7 @@ jQuery(document).ready(function($) {
 					$('#header-text').html( 'We\'ll use "window.location = obj.redirect;" to send to ' + obj.redirect ); 
 					window.location = obj.redirect;
 				} else  {
-					$('#header-text').html('no modal LPV | we love ' + remaining + ' remaining ' + '| response == ' +  obj.response );
+					$('#header-text').html('no modal LPV | remaining= ' + remaining + ' remaining ' + '| response == ' +  obj.response );
 				} 
 			} else {
 				$('#lpv_count').html(remaining);

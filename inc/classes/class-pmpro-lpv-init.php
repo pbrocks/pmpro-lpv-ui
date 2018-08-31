@@ -7,21 +7,15 @@ class PMPro_LPV_Init {
 
 	/**
 	 * init     Using static functions for our classes -- seems to be slightly more performant
-	 * <<<<<<< HEAD
-		if ( pmpro_has_membership_access() ) {
-			return;
-		}
 	 *
 	 * @return [type] [description]
 	 */
 	public static function init() {
-		// Adding a subment to hook into other PMPro menus
 		add_action( 'wp_head', array( __CLASS__, 'lpv_header_admin_head' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'lpv_admin_menu' ) );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'lpv_header_enqueue' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'lpv_admin_enqueue' ) );
 		add_action( 'wp_footer', array( __CLASS__, 'lpv_notification_bar' ) );
-		add_action( 'wp_head', array( __CLASS__, 'lpv_cookie_form' ) );
 		add_filter( 'lpv_open_todo', array( __CLASS__, 'lpv_open_todo_message' ) );
 		add_action( 'wp_head', array( __CLASS__, 'pmpro_lpv_modal' ), 15 );
 
@@ -40,19 +34,24 @@ class PMPro_LPV_Init {
 		$handle = 'lpv-cookie';
 		$list = 'enqueued';
 
-		if ( '1' === get_option( 'lpv_diagnostic_header' ) && wp_script_is( $handle, $list ) ) { ?>
+		if ( 1 === intval( get_option( 'lpv_diagnostic_header' ) ) ) {
+			/*
+			&& wp_script_is( $handle, $list ) ) {
+			*/ ?>
 			<style type="text/css">
 				#lpv-header {
 					background: rgba(250,128,114,.8);
 					text-align: center;
 				}
 			</style>
-			<div id="lpv-header" style="z-index:333;">
+			<div id="lpv-header" style="z-index:333;">$options[ 'lpv_limit_' . $level_id . '_views' ];<br>
+			var lpv_array = obj.userlevel + '|' + upcount + '|' + obj.lpv_limit;<br>
+				<span id="userlevel">userlevel</span> | <span id="upcount">upcount</span> | <span id="lpvlimit">lpvlimit</span> 
 				<div id="header-text"></div>
 				<?php echo self::lpv_cookie_check(); ?>
 			</div>
-			<?php } ?>
-		<?php
+			<?php
+		}
 	}
 
 	/**
@@ -71,60 +70,11 @@ class PMPro_LPV_Init {
 			array( __CLASS__, 'pmpro_lpv_settings_page' )
 		);
 	}
-	public static function pmpro_lpv_settings_page() {
-		global $shortcode_tags;
-		echo '<h3>' . __FILE__ . '</h3>';
-		echo '<ul>';
-		echo '<li> * Cookie is set on landing on Home, no banner shown.li>';
-		echo '<li> * User triggers count on single posts.</li>';
-		echo '<li> * Banner shows on bottom with counts on first view of single post.</li>';
-		echo '<li> * Banner does not show on archive pages only on single posts.</li>';
-		echo '<li> * After last view available banner says you have no views remaining, provides link to subcribe/join (levels page) </li>';
-		echo '<li> * * NumberFormatter is a problem - removing for now</li>';
-		echo '<li> * ' . apply_filters( 'lpv_open_todo', 'lpv_open_todo filter here' ) . '</li>';
-		echo '</ul>';
-		echo '<pre>pmpro_lpv_settings ';
-		// $array = ( in_array( 'pmpro_level', $shortcode_tags ) ? '<h4>pmpro_level exists</h4>' : '<h4>pmpro_level not available</h4>');
-		// print_r( $array );
-		$array = ( in_array( 'pmpro_advanced_levels', $shortcode_tags ) ? '<h4>pmpro_advanced_levels exists</h4>' : '<h4>pmpro_advanced_levels not available</h4>' );
-		print_r( $array );
-		print_r( $shortcode_tags );
-		// print_r( self::pmpro_lpv_settings( 1 ) );
-		echo 'get_pmpro_lpv_limit() ';
-		// print_r( self::get_pmpro_lpv_limit() );
-		echo '</pre>';
-	}
-
-	/**
-	 * [lpv_open_todo_message description]
-	 *
-	 * @param  [type] $example [description]
-	 * @return [type]          [description]
-	 */
-	public static function lpv_open_todo_message( $example ) {
-		// Maybe modify $example in some way.
-		return $example;
-	}
 
 	public static function pmpro_lpv_settings( $level_id ) {
 		$lpv['limit'] = get_option( 'pmprolpv_limit_' . $level_id );
 		$lpv['use_js'] = get_option( 'pmprolpv_use_js' );
 		return $lpv;
-	}
-	/**
-	 * [lpv_cookie_form description]
-	 *
-	 * @param  [type] $example [description]
-	 * @return [type]          [description]
-	 */
-	public static function lpv_cookie_form() {
-		$limitt = 'need limit';
-		$periodd = 'need period';
-		?>
-		<div style="background: aliceblue;padding: 2rem;text-align: center;width: 100%">
-			echo smething
-		</div>
-			<?php
 	}
 
 	/**
@@ -146,7 +96,7 @@ class PMPro_LPV_Init {
 		wp_enqueue_style( 'lpv-head' );
 		wp_register_style( 'modal-popup', plugins_url( 'css/modal-popup.css', dirname( __FILE__ ) ) );
 		wp_enqueue_style( 'modal-popup' );
-		wp_register_script( 'lpv-cookie', plugins_url( '/js/lpv-set-cookie.js', dirname( __FILE__ ) ), array( 'jquery' ), false, false );
+		wp_register_script( 'lpv-cookie', plugins_url( 'js/lpv-set-cookie.js', dirname( __FILE__ ) ), array( 'jquery' ), false, false );
 		wp_localize_script(
 			'lpv-cookie',
 			'lpv_cookie_object',
@@ -154,7 +104,7 @@ class PMPro_LPV_Init {
 				'lpv_cookie_ajaxurl'    => admin_url( 'admin-ajax.php' ),
 				'lpv_cookie_nonce'      => wp_create_nonce( 'lpv-cookie-nonce' ),
 				'lpv_cookie_user_level' => self::pmpro_get_user_level(),
-				'lpv_cookie_lpv_limit'  => self::get_pmpro_lpv_limit(),
+				'lpv_cookie_lpv_limit'  => self::get_pmpro_lpv_lim1t(),
 				'lpv_cookie_redirect'   => self::get_pmpro_lpv_redirect(),
 				'lpv_cookie_response'   => self::get_pmpro_lpv_limit_response(),
 				'lpv_cookie_php_expire' => self::get_pmpro_lpv_period(),
@@ -193,10 +143,10 @@ class PMPro_LPV_Init {
 	/**
 	 * Redirect to the configured page or the default levels page
 	 */
-	public static function get_pmpro_lpv_limit() {
+	public static function get_pmpro_lpv_lim1t() {
+		$options = get_option( 'pmpro_lpv_settings' );
 		$level_id = self::pmpro_get_user_level();
-		$limit = get_option( 'pmprolpv_limit_' . $level_id );
-		$limit['level_id'] = $level_id;
+		$limit = $options[ 'level_' . $level_id . '_views' ];
 		return $limit;
 	}
 
@@ -221,7 +171,7 @@ class PMPro_LPV_Init {
 		// } else {
 		// $redirect_url = get_the_permalink( $lpv_response );
 		// }
-		return $lpv_response;
+		return $lpv_options['post_limit_action'];
 	}
 
 	public static function get_pmpro_lpv_period() {
@@ -241,16 +191,16 @@ class PMPro_LPV_Init {
 	public static function lpv_header_set_cookie() {
 		$ajax_data = $_POST;
 		$month = date( 'n', current_time( 'timestamp' ) );
-		// if ( ! empty( $_COOKIE['pmpro_lpv_ct'] ) ) {
-		// global $current_user;
-		// $parts = explode( ';', $_COOKIE['pmpro_lpv_ct'] );
-		// $splitparts = explode( '|', $parts[0] );
-		// $ajax_data['parts'] = $parts;
-		// $ajax_data['splitparts'] = $splitparts;
-		// $ajax_data['cookie_level'] = $splitparts[0];
-		// $ajax_data['cookie_views'] = $splitparts[1];
-		// $ajax_data['cookie_limit'] = $splitparts[2];
-		// }
+		if ( ! empty( $_COOKIE['pmpro_lpv_ct'] ) ) {
+			global $current_user;
+			$parts = explode( ';', $_COOKIE['pmpro_lpv_ct'] );
+			$splitparts = explode( '|', $parts[0] );
+			$ajax_data['parts'] = $parts;
+			$ajax_data['splitparts'] = $splitparts;
+			// $ajax_data['cookie_level'] = $splitparts[0];
+			// $ajax_data['cookie_views'] = $splitparts[1];
+			// $ajax_data['cookie_limit'] = $splitparts[2];
+		}
 		$ajax_data['lpv_limit'] = $ajax_data['limit']['views'];
 		$ajax_data['lpv_period'] = $ajax_data['limit']['period'];
 		$expires = date( 'Y-m-d', strtotime( '+1' . $ajax_data['lpv_period'] ) );
@@ -330,6 +280,50 @@ class PMPro_LPV_Init {
 			<a href="<?php echo wp_login_url( get_permalink() ); ?>" title="Log in">Log in</a> or <span id="footer-break" style="display:none;"><br><br></span><a href="<?php echo pmpro_url( 'levels' ); ?>" title="Subscribe now">Subscribe</a> for unlimited access.</span>
 			</div></div>
 			<?php
+		} else {
+			?>
+			<div id="lpv-footer" style="z-index:333;"><div>
+			Nothing</div>
+			</div>
+			<?php
+
 		}
 	}
+
+	public static function pmpro_lpv_settings_page() {
+		global $shortcode_tags;
+		echo '<h3>' . __FILE__ . '</h3>';
+		echo '<ul>';
+		echo '<li> * Cookie is set on landing on Home, no banner shown.li>';
+		echo '<li> * User triggers count on single posts.</li>';
+		echo '<li> * Banner shows on bottom with counts on first view of single post.</li>';
+		echo '<li> * Banner does not show on archive pages only on single posts.</li>';
+		echo '<li> * After last view available banner says you have no views remaining, provides link to subcribe/join (levels page) </li>';
+		echo '<li> * * NumberFormatter is a problem - removing for now</li>';
+		echo '<li> * ' . apply_filters( 'lpv_open_todo', 'lpv_open_todo filter here' ) . '</li>';
+		echo '</ul>';
+		echo '<pre>pmpro_lpv_settings ';
+		// $array = ( in_array( 'pmpro_level', $shortcode_tags ) ? '<h4>pmpro_level exists</h4>' : '<h4>pmpro_level not available</h4>');
+		// print_r( $array );
+		$array = ( in_array( 'pmpro_advanced_levels', $shortcode_tags ) ? '<h4>pmpro_advanced_levels exists</h4>' : '<h4>pmpro_advanced_levels not available</h4>' );
+		print_r( $array );
+		print_r( $shortcode_tags );
+		// print_r( self::pmpro_lpv_settings( 1 ) );
+		echo 'get_pmpro_lpv_lim1t() ';
+		// print_r( self::get_pmpro_lpv_lim1t() );
+		echo '</pre>';
+	}
+
+	/**
+	 * [lpv_open_todo_message description]
+	 *
+	 * @param  [type] $example [description]
+	 * @return [type]          [description]
+	 */
+	public static function lpv_open_todo_message( $example ) {
+		// Maybe modify $example in some way.
+		return $example;
+	}
+
+
 }

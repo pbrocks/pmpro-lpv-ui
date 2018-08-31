@@ -6,16 +6,13 @@ class PMPro_LPV_Settings {
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'add_admin_menu' ) );
 		add_action( 'admin_init', array( __CLASS__, 'pmpro_lpv_settings_init' ) );
-		// add_action( 'admin_footer', array( __CLASS__, 'print_all_pmpro_lpv_levels' ) );
 	}
 	public static function add_admin_menu() {
-
 		add_submenu_page( 'pmpro-membershiplevels', __( 'PMPro LPV Settings', 'pmpro-lpv-ui' ), __( 'PMPro LPV Settings', 'pmpro-lpv-ui' ), 'manage_options', 'pmpro-lpv-settings.php', array( __CLASS__, 'lpv_options_page' ) );
 
 	}
 
 	public static function pmpro_lpv_settings_init() {
-
 		register_setting( 'pmpro_lpv_settings', 'pmpro_lpv_settings' );
 		$levels = self::get_all_pmpro_lpv_levels();
 
@@ -37,27 +34,23 @@ class PMPro_LPV_Settings {
 				$id
 			);
 
-			// register_setting(
-			// 'pmpro_lpv_settings',
-			// 'lpv_limit_id_' . $id,
-			// 'pmprolpv_sanitize_limit'
-			// );
 		}
 		add_settings_field(
-			'select_field_0',
+			'post_limit_action',
 			__( 'Post limit action', 'pmpro-lpv-settings' ),
 			array( __CLASS__, 'post_limit_action_render' ),
 			'pmpro_lpv_settings',
 			'pmpro_lpv_section'
 		);
-
 	}
 
 	public static function print_all_pmpro_lpv_levels() {
 		$levels = self::get_all_pmpro_lpv_levels();
-		echo '<pre> <div class="wrap">';
+		echo '<div class="wrap">';
+		echo '<pre>';
 		print_r( $levels );
-		echo '</div></pre>';
+		echo '</pre>';
+		echo '</div>';
 	}
 
 	public static function get_all_pmpro_lpv_levels() {
@@ -89,44 +82,6 @@ class PMPro_LPV_Settings {
 		<?php
 	}
 
-	public static function select_field_0_render() {
-		$options = get_option( 'pmpro_lpv_settings' );
-		?>
-		<select name='pmpro_lpv_settings[select_field_0]'>
-		<option value='1' <?php selected( $options['select_field_0'], 1 ); ?>>Option 1</option>
-		<option value='2' <?php selected( $options['select_field_0'], 2 ); ?>>Option 2</option>
-		<option value='3' <?php selected( $options['select_field_0'], 3 ); ?>>Option 3</option>
-		<option value='4' <?php selected( $options['select_field_0'], 4 ); ?>>Option 4</option>
-		</select>
-
-		<?php
-
-	}
-
-	public static function text_field_0_render() {
-		$options = get_option( 'pmpro_lpv_settings' );
-		?>
-		<input type='text' name='pmpro_lpv_settings[text_field_0]' value='<?php echo $options['text_field_0']; ?>'>
-		<?php
-
-	}
-
-	public static function checkbox_field_0_render() {
-		$options = get_option( 'pmpro_lpv_settings' );
-		?>
-		<input type='checkbox' name='pmpro_lpv_settings[checkbox_field_0]' <?php checked( $options['checkbox_field_0'], 1 ); ?> value='1'>
-		<?php
-
-	}
-
-	public static function textarea_field_0_render() {
-		$options = get_option( 'pmpro_lpv_settings' );
-		?>
-		<textarea cols='40' rows='5' name='pmpro_lpv_settings[textarea_field_a]'><?php echo $options['textarea_field_a']; ?></textarea>
-		<?php
-
-	}
-
 	public static function post_limit_action_render() {
 		$options = get_option( 'pmpro_lpv_settings' );
 		?>
@@ -139,13 +94,10 @@ class PMPro_LPV_Settings {
 		<label>
 		<input type='radio' name='pmpro_lpv_settings[post_limit_action]' <?php checked( $options['post_limit_action'], 2 ); ?> value='2'> Radio 2</label>
 		<?php
-
 	}
 
 	public static function pmpro_lpv_settings_section_callback() {
-
 		echo __( '<em style="padding:1rem;">This description is found in this function <b>' . __FUNCTION__ . ' </b>and provides an paragraph-type area below the headings and above the individual settings.</em>', 'pmpro-lpv-settings' );
-
 	}
 
 	public static function lpv_options_page() {
@@ -180,12 +132,10 @@ class PMPro_LPV_Settings {
 	 * @return mixed
 	 */
 	public static function pmprolpv_sanitize_limit( $args ) {
-
 		if ( ! is_numeric( $args['views'] ) ) {
 			$args['views'] = '';
 			$args['period'] = '';
 		}
-
 		return $args;
 	}
 

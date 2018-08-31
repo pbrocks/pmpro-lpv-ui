@@ -105,19 +105,19 @@ class PMPro_LPV_Customizer {
 			)
 		);
 
-		include plugin_dir_path( __FILE__ ) . 'class-soderland-toggle-control.php';
+		// include plugin_dir_path( __FILE__ ) . 'class-soderland-toggle-control.php';
 		$pmpro_manager->add_control(
-			new Soderland_Toggle_Control(
-				$pmpro_manager,
+			// new Soderland_Toggle_Control(
+				// $pmpro_manager,
 				'lpv_diagnostic_header',
-				array(
-					'label'     => __( 'Show PMPro Header Diagnostic', 'pmpro-lpv-customizer' ),
-					'settings'  => 'lpv_diagnostic_header',
-					'section'   => 'pmpro_lpv_section',
-					'priority'  => 10,
-					'type'      => 'ios',
-					'type'      => 'checkbox',
-				)
+			array(
+				'label'     => __( 'Show PMPro Header Diagnostic', 'pmpro-lpv-customizer' ),
+				'settings'  => 'lpv_diagnostic_header',
+				'section'   => 'pmpro_lpv_section',
+				'priority'  => 10,
+				// 'type'      => 'ios',
+				'type'      => 'checkbox',
+				// )
 			)
 		);
 
