@@ -23,14 +23,14 @@ class PMPro_LPV_Init {
 		add_action( 'wp_footer', array( __CLASS__, 'lpv_notification_bar' ) );
 		add_action( 'wp_head', array( __CLASS__, 'lpv_cookie_form' ) );
 		add_filter( 'lpv_open_todo', array( __CLASS__, 'lpv_open_todo_message' ) );
-		add_action( 'wp_head', array( __CLASS__, 'pmpro_lpv_modal' ),15 );
+		add_action( 'wp_head', array( __CLASS__, 'pmpro_lpv_modal' ), 15 );
 
 		add_action( 'wp_ajax_tie_into_lpv_cookie', array( __CLASS__, 'lpv_header_set_cookie' ) );
 		add_action( 'wp_ajax_nopriv_tie_into_lpv_cookie', array( __CLASS__, 'lpv_header_set_cookie' ) );
 	}
 	public static function lpv_cookie_check() {
-		if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
-			$return = 'Yep, $_COOKIE[\'pmpro_lpv_count\'] is set!!';
+		if ( isset( $_COOKIE['pmpro_lpv_ct'] ) ) {
+			$return = 'Yep, $_COOKIE[\'pmpro_lpv_ct\'] is set!!';
 		} else {
 			$return = 'Not yet set';
 		}
@@ -86,7 +86,7 @@ class PMPro_LPV_Init {
 		echo '<pre>pmpro_lpv_settings ';
 		// $array = ( in_array( 'pmpro_level', $shortcode_tags ) ? '<h4>pmpro_level exists</h4>' : '<h4>pmpro_level not available</h4>');
 		// print_r( $array );
-		$array = ( in_array( 'pmpro_advanced_levels', $shortcode_tags ) ? '<h4>pmpro_advanced_levels exists</h4>' : '<h4>pmpro_advanced_levels not available</h4>');
+		$array = ( in_array( 'pmpro_advanced_levels', $shortcode_tags ) ? '<h4>pmpro_advanced_levels exists</h4>' : '<h4>pmpro_advanced_levels not available</h4>' );
 		print_r( $array );
 		print_r( $shortcode_tags );
 		// print_r( self::pmpro_lpv_settings( 1 ) );
@@ -127,17 +127,17 @@ class PMPro_LPV_Init {
 		$cur_usr_ary = self::get_pmpro_member_array( 1 );
 		$cur_lev = $cur_usr_ary['level_id'];
 		$xyz = ' | Current Level ' . $cur_lev . ' | Limit ' . $limitt . ' per ' . $periodd;
-		if ( isset( $_COOKIE['pmpro_lpv_count'] ) ) {
+		if ( isset( $_COOKIE['pmpro_lpv_ct'] ) ) {
 			$button_value = 'Reset Cookie';
 			// $button_value = 3600 * 24 * 100 . ' seconds';
 			$button = '<input type="hidden" name="token" value="reset">';
-			$stg = ' $_COOKIE(\'pmpro_lpv_count\') SET !! ' . $button;
+			$stg = ' $_COOKIE(\'pmpro_lpv_ct\') SET !! ' . $button;
 		} else {
 			$button_value = 'Set Cookie';
 			$button = '<input type="hidden" name="token" value="set">';
-			$stg = ' $_COOKIE(\'pmpro_lpv_count\') NOT set ?!?!? ' . $button;
+			$stg = ' $_COOKIE(\'pmpro_lpv_ct\') NOT set ?!?!? ' . $button;
 		}
-			?>
+		?>
 			</form>
 			<?php
 	}
@@ -256,9 +256,9 @@ class PMPro_LPV_Init {
 	public static function lpv_header_set_cookie() {
 		$ajax_data = $_POST;
 		$month = date( 'n', current_time( 'timestamp' ) );
-		if ( ! empty( $_COOKIE['pmpro_lpv_count'] ) ) {
+		if ( ! empty( $_COOKIE['pmpro_lpv_ct'] ) ) {
 			global $current_user;
-			$parts = explode( ';', $_COOKIE['pmpro_lpv_count'] );
+			$parts = explode( ';', $_COOKIE['pmpro_lpv_ct'] );
 			$splitparts = explode( '|', $parts[0] );
 			$ajax_data['parts'] = $parts;
 			$ajax_data['splitparts'] = $splitparts;
@@ -335,7 +335,7 @@ class PMPro_LPV_Init {
 		// Check for past views. Needs to check if the post is locked at all by default.
 		$handle = 'lpv-cookie';
 		$list = 'enqueued';
-		if ( isset( $_COOKIE['pmpro_lpv_count'] ) && wp_script_is( $handle, $list ) ) {
+		if ( isset( $_COOKIE['pmpro_lpv_ct'] ) && wp_script_is( $handle, $list ) ) {
 			global $current_user;
 
 			// $article_s = sprintf( _n( '%s free article', '%s free articles', $formatted, 'paid-memberships-pro' ), number_format_i18n( $formatted ) );
