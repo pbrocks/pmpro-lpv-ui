@@ -184,10 +184,14 @@ class PMPro_LPV_Init {
 		;
 		$member_data = get_userdata( $user_object->ID );
 		$member_object = pmpro_getMembershipLevelForUser( $member_data->ID );
+		if( ! empty( $member_object)) {
 		$member_level['level_id'] = $member_object->id;
 		$member_level['level_name'] = $member_object->name;
 		$member_level['level_description'] = $member_object->description;
 		$member_level['subscription_id'] = $member_object->subscription_id;
+	} else {
+		$member_level['level_id'] = 0;
+	}
 		return $member_level;
 	}
 	/**
