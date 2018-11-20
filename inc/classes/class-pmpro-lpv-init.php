@@ -161,7 +161,7 @@ class PMPro_LPV_Init {
 		wp_enqueue_style( 'lpv-head' );
 		wp_register_style( 'modal-popup', plugins_url( 'css/modal-popup.css', dirname( __FILE__ ) ) );
 		wp_enqueue_style( 'modal-popup' );
-		wp_register_script( 'lpv-cookie', plugins_url( '/js/lpv-set-cookie.js', dirname( __FILE__ ) ), array( 'jquery' ), false, false );
+		wp_register_script( 'lpv-cookie', plugins_url( '/js/lpv-set-cookie.js', dirname( __FILE__ ) ), array( 'jquery' ), time(), false );
 		wp_localize_script(
 			'lpv-cookie',
 			'lpv_cookie_object',
@@ -184,14 +184,14 @@ class PMPro_LPV_Init {
 		;
 		$member_data = get_userdata( $user_object->ID );
 		$member_object = pmpro_getMembershipLevelForUser( $member_data->ID );
-		if( ! empty( $member_object)) {
-		$member_level['level_id'] = $member_object->id;
-		$member_level['level_name'] = $member_object->name;
-		$member_level['level_description'] = $member_object->description;
-		$member_level['subscription_id'] = $member_object->subscription_id;
-	} else {
-		$member_level['level_id'] = 0;
-	}
+		if ( ! empty( $member_object ) ) {
+			$member_level['level_id'] = $member_object->id;
+			$member_level['level_name'] = $member_object->name;
+			$member_level['level_description'] = $member_object->description;
+			$member_level['subscription_id'] = $member_object->subscription_id;
+		} else {
+			$member_level['level_id'] = 0;
+		}
 		return $member_level;
 	}
 	/**
@@ -223,9 +223,11 @@ class PMPro_LPV_Init {
 	 * Redirect to the configured page or the default levels page
 	 */
 	public static function get_pmpro_lpv_redirect() {
+		global $pmpro_pages;
 		$page_id = get_option( 'pmprolpv_redirect_page' );
 		if ( empty( $page_id ) ) {
-			$redirect_url = pmpro_url( 'levels' );
+			// $redirect_url = pmpro_url( 'levels' );
+			$redirect_url = $pmpro_pages( 'levels' );
 		} else {
 			$redirect_url = get_the_permalink( $page_id );
 		}

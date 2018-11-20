@@ -10,7 +10,7 @@ jQuery(document).ready(function($) {
 	 	var parts = value.split("; " + name + "=");
 	 	if (parts.length == 2) return parts.pop().split(";").shift();
 	 };
-	 var thisCookie = getCookie('pmpro_lpv_count');
+	 var thisCookie = getCookie('pmpro_lpv_ct');
 	 if (thisCookie == null) {
 	 	count = 0;
 	 	limit = 5;
@@ -47,7 +47,7 @@ jQuery(document).ready(function($) {
 			ajaxurl      : lpv_cookie_object.lpv_cookie_ajaxurl,
 			nonce        : lpv_cookie_object.lpv_cookie_nonce,
 		},
-		dataType: "JSON",
+		// dataType: "JSON",
 		success:function( data ) {
 			// $('.modal-body').html(data).css({'text-align':'left'});
 
@@ -56,35 +56,39 @@ jQuery(document).ready(function($) {
 			var exp = d.toUTCString();
 
 			elem = $('body');
-			// if ( obj.lpv_limit == upcount ) {
-			// 	var upcount = 0;
-			// } 
 			if (elem.hasClass('single')){
 				var upcount = Number(count) + Number(1);
 			} else {
 				var upcount = count;
 			}
-
+			if ( obj.lpv_limit == upcount ) {
+				// var upcount = 0;
+			}
 			var lpv_array = obj.userlevel + '|' + upcount + '|' + obj.lpv_limit;
 
 
 			var remaining = obj.lpv_limit - upcount;
-			document.cookie="pmpro_lpv_count=" + lpv_array + '; expires=' + exp + ';path=/';
+			document.cookie="pmpro_lpv_ct=" + lpv_array + '; expires=' + exp + ';path=/';
 
-				$('#userlevel').html('userlevel=' + obj.userlevel);
-				$('#upcount').html('upcount=' + upcount);
-				$('#lpvlimit').html('lpvlimit=' + obj.lpv_limit + ' | remaining= ' + remaining + ' | response == ' +  obj.response );
 			if ( Number(remaining) < 0 ) {
 				$('#lpv_count').html('0');
 				$('#lpv_limit').html(obj.lpv_limit);
-				// if ( 0 >= Number(remaining) && 'redirect' == obj.response ) {
-					$('#header-text').html( 'We\'ll use "window.location = obj.redirect;" to send to ' + obj.redirect + '<br>eff off' ); 
-					if ( obj.redirect != window.location.href )	{
-						window.location = obj.redirect;
-					}
-				// } else  {
-				// 	$('#header-text').html('no modal LPV | remaining= ' + remaining + ' remaining ' + '| response == ' +  obj.response );
-				// } 
+				if ( 0 >= Number(remaining) && 'footer' == obj.response ) {
+					$('#lpv-footer').css({'padding':'8rem 0'});
+					$('.pmpro_level.medium-12').css({'padding':'2px','background':'rgba(22,22,22,.69)'});
+					$('#lpv-footer-levels').css({'display':'block'}).delay(1500);
+					$('#lpv-footer-display').css({'display':'none'}).delay(1500);
+				}
+				if ( 0 >= Number(remaining) && 'popup' == obj.response ) {
+					$('#lpv-modal').css({'display':'block'});
+					$('#header-text').html('Yo modal = LPV | love ' + remaining + ' remaining');
+				}
+				if ( 0 >= Number(remaining) && 'redirect' == obj.response ) {
+					$('#header-text').html( 'We\'ll use "window.location = obj.redirect;" to send to ' + obj.redirect ); 
+					window.location = obj.redirect;
+				} else  {
+					$('#header-text').html('no modal LPV | we love ' + remaining + ' remaining ' + '| response == ' +  obj.response );
+				} 
 			} else {
 				$('#lpv_count').html(remaining);
 				$('#lpv_limit').html(obj.lpv_limit);
